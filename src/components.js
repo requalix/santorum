@@ -127,8 +127,9 @@ Crafty.c('Twoway2000', {
 Crafty.c('Dude', {
   init: function() {
     this.count=0;
-    this.requires('Actor, Twoway2000, Color, Collision')
-      .color('#817679')
+    this.requires('Actor')
       .attr({w: Game.map_grid.tile.width, h: Game.map_grid.tile.height * 2});
+    this.requires('Twoway2000, Color, Collision')
+      .color('#817679');
   }
 });
