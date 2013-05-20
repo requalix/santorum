@@ -26,46 +26,110 @@ Crafty.c('Actor', {
   },
 });
 
-Crafty.c('Block', {
-  init: function() {
-    this.requires('Actor, Color, Solid')
-      .color('#333');
-  },
-});
-
 Crafty.c('Water', {
   init: function() {
     this.requires('Actor, Color')
-      .color('#00f');
+      .color('rgba(0,0,255,.7)');
   },
 });
 
-Crafty.c('Ground', {
+Crafty.c('Block', {
   init: function() {
-    this.requires('Actor, Color, Solid')
+    this.requires('Actor, Color')
       .color('#ADA96E');
   },
 });
 
-// move like this: http://craftyjs.com/api/Twoway.html
+function overlap(lower1, upper1, lower2, upper2) {
+  return Math.max(lower1, lower2) < Math.min(upper1, upper2);
+}
+
+// Also does gravity.
+Crafty.c('Twoway2000', {
+
+  // attributes:
+  speed: 8,
+  jump_speed: 10,
+  gravity: 0.2,
+
+  // private pls dont touch!
+  _movement: { x: 0, y: 0},
+  _can_jump: true,
+
+  init: function() {
+    this.requires('Actor');
+  },
+
+  twoway2000: function(left, right, jump) {
+    return this.bind('EnterFrame', function() {
+      if (!!Crafty.keydown[left]) {
+        this._movement.x = -this.speed;
+      }
+      if (!!Crafty.keydown[right]) {
+        this._movement.x = this.speed;
+      }
+      if (!!Crafty.keydown[Crafty.keys['DOWN_ARROW']]) {
+        this._movement.y = 64;
+      }
+      if (!Crafty.keydown[left] && !Crafty.keydown[right]) {
+        this._movement.x = 0;
+      }
+      this.x += this._movement.x;
+      this.y += this._movement.y;
+      if (this._movement.y) {
+        this._can_jump = false;
+      }
+      this._movement.y += this.gravity;
+    }).bind('KeyDown', function(e) {
+      if (e.key == jump) {
+        if (this._can_jump) {
+          this._can_jump = false;
+          this._movement.y -= this.jump_speed;
+        }
+      }
+    });
+  },
+
+  stopOn: function(what) {
+    return this.onHit(what, function(them) {
+      // first check all x...
+      this.y -= this._movement.y - 0.01;
+      for(var i = 0; i < them.length; i++) {
+        if (this.intersect(them[i].obj.x, them[i].obj.y, them[i].obj.w, them[i].obj.h)) {
+          this.x -= this._movement.x;
+          this._movement.x = 0;
+          if (this.x < them[i].obj.x) {
+            this.x = them[i].obj.x - this.w;
+          } else {
+            this.x = them[i].obj.x + them[i].obj.w;
+          }
+        }
+      }
+      this.y += this._movement.y - 0.01;
+
+      for(var i = 0; i < them.length; i++) {
+        if (this.intersect(them[i].obj.x, them[i].obj.y, them[i].obj.w, them[i].obj.h)) {
+          this.y -= this._movement.y;
+          this._movement.y = 0;
+          if (this.y < them[i].obj.y) {
+            this._can_jump = true;
+            this.y = them[i].obj.y - this.h;
+          } else {
+            this.y = them[i].obj.y + them[i].obj.h;
+          }
+        }
+      }
+    });
+  }
+});
+
 Crafty.c('Dude', {
   init: function() {
     this.count=0;
-    this.requires('Actor, Twoway, Gravity, Color, Collision')
-      .twoway(4, 0.2 * Game.map_grid.tile.height) // move pixels, jump speed (pixels...)
+    this.requires('Actor, Twoway2000, Color, Collision')
+      .twoway2000(Crafty.keys['LEFT_ARROW'], Crafty.keys['RIGHT_ARROW'], Crafty.keys['UP_ARROW'])
+      .stopOn('Block')
       .color('#817679')
-      .gravity('Ground')
       .attr({w: Game.map_grid.tile.width, h: Game.map_grid.tile.height * 2})
-      .stopOnSolids();
-  },
-
-  stopOnSolids: function() {
-    this.onHit('Solid', this.stopMovement);
-  },
-
-  stopMovement: function() {
-    if (this._movement) {
-      this.x -= this._movement.x;
-    }
   }
 });
