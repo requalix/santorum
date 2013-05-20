@@ -22,11 +22,11 @@ Game = {
 
     Crafty.e('Dude').at(5, 5)
       .twoway2000(Crafty.keys['LEFT_ARROW'], Crafty.keys['RIGHT_ARROW'], Crafty.keys['UP_ARROW'], Crafty.keys['DOWN_ARROW'])
-      .color('white');
+      .color('#f6bda9');
 
     Crafty.e('Dude').at(4, 5)
       .twoway2000(Crafty.keys['A'], Crafty.keys['D'], Crafty.keys['W'], Crafty.keys['S'])
-      .color('black');
+      .color('#583726');
 
     for(i=0;i<Game.map_grid.width;i++) {
       for(j=0;j<Game.map_grid.height;j++) {
