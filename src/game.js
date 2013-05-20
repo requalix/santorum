@@ -20,7 +20,14 @@ Game = {
     Crafty.init(Game.width(), Game.height());
     Crafty.background('#bef');
 
-    Crafty.e('Dude').at(5, 5);
+    Crafty.e('Dude').at(5, 5)
+      .twoway2000(Crafty.keys['LEFT_ARROW'], Crafty.keys['RIGHT_ARROW'], Crafty.keys['UP_ARROW'], Crafty.keys['DOWN_ARROW'])
+      .color('white');
+
+    Crafty.e('Dude').at(4, 5)
+      .twoway2000(Crafty.keys['A'], Crafty.keys['D'], Crafty.keys['W'], Crafty.keys['S'])
+      .color('black');
+
     for(i=0;i<Game.map_grid.width;i++) {
       for(j=0;j<Game.map_grid.height;j++) {
         if(i==0 || i== Game.map_grid.width-1 || j== 0) {

@@ -52,15 +52,15 @@ Crafty.c('Twoway2000', {
   jump_speed: 10,
   gravity: 0.2,
 
-  // private pls dont touch!
-  _movement: { x: 0, y: 0},
-  _can_jump: true,
-
   init: function() {
-    this.requires('Actor');
+    this.requires('Actor').
+      attr( {
+        _movement: { x: 0, y: 0},
+        _can_jump: true
+      });
   },
 
-  twoway2000: function(left, right, jump) {
+  twoway2000: function(left, right, jump, splash) {
     return this.bind('EnterFrame', function() {
       if (!!Crafty.keydown[left]) {
         this._movement.x = -this.speed;
@@ -68,7 +68,7 @@ Crafty.c('Twoway2000', {
       if (!!Crafty.keydown[right]) {
         this._movement.x = this.speed;
       }
-      if (!!Crafty.keydown[Crafty.keys['DOWN_ARROW']]) {
+      if (!!Crafty.keydown[splash]) {
         this._movement.y = 64;
       }
       if (!Crafty.keydown[left] && !Crafty.keydown[right]) {
@@ -87,11 +87,12 @@ Crafty.c('Twoway2000', {
           this._movement.y -= this.jump_speed;
         }
       }
-    });
+    }).stopOn('Block').stopOn('Dude');
   },
 
   stopOn: function(what) {
     return this.onHit(what, function(them) {
+
       // first check all x...
       this.y -= this._movement.y - 0.01;
       for(var i = 0; i < them.length; i++) {
@@ -127,9 +128,7 @@ Crafty.c('Dude', {
   init: function() {
     this.count=0;
     this.requires('Actor, Twoway2000, Color, Collision')
-      .twoway2000(Crafty.keys['LEFT_ARROW'], Crafty.keys['RIGHT_ARROW'], Crafty.keys['UP_ARROW'])
-      .stopOn('Block')
       .color('#817679')
-      .attr({w: Game.map_grid.tile.width, h: Game.map_grid.tile.height * 2})
+      .attr({w: Game.map_grid.tile.width, h: Game.map_grid.tile.height * 2});
   }
 });
