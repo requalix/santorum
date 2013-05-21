@@ -48,8 +48,8 @@ function overlap(lower1, upper1, lower2, upper2) {
 Crafty.c('Twoway2000', {
 
   // attributes:
-  speed: 8,
-  jump_speed: 10,
+  speed: 8, // when push left and right how many pixels per frame to move
+  jump_speed: 10, // how many pixels per frame up should we go
   gravity: 0.2,
 
   init: function() {
