@@ -1,4 +1,4 @@
-/ The Grid component allows an element to be located
+// The Grid component allows an element to be located
 //  on a grid of tiles
 Crafty.c('Grid', {
   init: function() {
@@ -191,7 +191,6 @@ Crafty.c('Dude', {
 
 Crafty.c('Splash', {
 
-
   // attributes:
   DAMAGE_TO_PLAYER: 100,
   gravity: 0.2,
@@ -200,7 +199,7 @@ Crafty.c('Splash', {
   init: function() {
     this.requires('Actor')
       .attr({w: Game.map_grid.tile.width/4, h: Game.map_grid.tile.height/4});
-    this.requires('Freefall, Color, Collision')
+    this.requires('Color, Collision, Movable')
       .color('#0000ff')
       .onHit('Block', function(){ return this.destroy(); })
       .onHit('Dude', function(objs) {
@@ -209,7 +208,8 @@ Crafty.c('Splash', {
             objs[i].obj.health -= this.DAMAGE_TO_PLAYER;
             this.destroy();
           }
-      });
+      })
+      .move().attr({ _movement: {x: 0, y: 0}, gravity: 0.2 });
   },
 
   setCreator: function(_creator){
@@ -240,9 +240,10 @@ Crafty.c('WaterDroplet', {
   init: function() {
     this.requires('Actor')
       .attr({w: Game.map_grid.tile.width/8, h: Game.map_grid.tile.height/8});
-    this.requires('Freefall, Color, Collision')
+    this.requires('Color, Collision, Movable')
       .color('#0000ff')
       .onHit('Block', function(){ return this.destroy(); })
+      .move().attr({ _movement: {x: 0, y: 0}, gravity: 0.2 });
   },
 
   initP: function(_x, _y){
@@ -260,31 +261,6 @@ Crafty.c('WaterDroplet', {
   }
 
 });
-
-// Just obeys gravity, nobody controls the entity
-Crafty.c('Freefall', {
-
-  // attributes:
-  speed: 8, // when push left and right how many pixels per frame to move
-  gravity: 0.2,
-
-  init: function() {
-    this.requires('Actor, Collision').
-      attr({
-        _movement: { x: 0, y: 0},
-      });
-    this.bind('EnterFrame', function() {
-      this._movement.y += this.gravity;
-      this.x += this._movement.x;
-      this.y += this._movement.y;
-    });
-  }
-
-});
-
-
-
-
 
 
 
