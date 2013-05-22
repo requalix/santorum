@@ -27,10 +27,23 @@ Crafty.c('Actor', {
 });
 
 Crafty.c('Water', {
+
+  level: 4,
+
   init: function() {
     this.requires('Actor, Color')
       .color('rgba(0,0,255,.7)');
   },
+
+  // Level 4 is the default, and the entire block is water
+  // Level 0 is no water what so ever
+  // Scales linearly inbetween
+  setLevel: function(_level) {
+    level = _level;
+    Crafty.e('Block').at(0,0)
+      .setP(this.x, this.y + (level * this.h / 4));
+    return this;
+  }
 });
 
 Crafty.c('Block', {
@@ -39,8 +52,9 @@ Crafty.c('Block', {
       .color('#ADA96E');
   },
 
-  moveDownFraction: function(f) {
-    this.y += f*this.h;
+  setP: function(_x,_y) {
+    this.x = _x;
+    this.y = _y;
   }
 });
 
@@ -74,13 +88,16 @@ Crafty.c('Movable', {
         if (entity !== undefined && them[i].obj != entity) 
           continue;
         if (this.intersect(them[i].obj.x, them[i].obj.y, them[i].obj.w, them[i].obj.h)) {
-          // this.x -= this._movement.x; // redundant?
+          this.x -= this._movement.x;
           this._movement.x = 0;
+        /* Got rid of this, so character doesn't bounce to the side of things anymore
+         * I have not seen any bugs so far
           if (this.x < them[i].obj.x) {
             this.x = them[i].obj.x - this.w;
           } else {
             this.x = them[i].obj.x + them[i].obj.w;
           }
+        */
         }
       }
       this.y += this._movement.y - 0.01;

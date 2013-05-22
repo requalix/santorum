@@ -19,8 +19,7 @@ Crafty.scene(
           Crafty.e('Block').at(i,j);
         } else if(j==Game.map_grid.height-1 || j==Game.map_grid.height-2) {
           if ((i >= 7 && i<=14 ) && j == Game.map_grid.height - 2) {
-            Crafty.e('Water').at(i,j);
-            Crafty.e('Block').at(i,j).moveDownFraction(0.5);
+            Crafty.e('Water').at(i,j).setLevel(2+(i%3));
           } else {
             Crafty.e('Block').at(i,j);
           }
