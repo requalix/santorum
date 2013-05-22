@@ -1,0 +1,49 @@
+<html>
+<head>
+    <title>Santorum Level Editor</title>
+    <link rel="stylesheet" type="text/css" href="editor.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="src/editor.js"></script>
+</head>
+<body>
+
+<div id="canvas_div">
+<canvas id="editor_canvas" width="800" height="800">
+    Canvas not supported, get a better browser.
+</canvas>
+</div>
+
+<div id="button_div">
+    <form>
+        Width: <input type="text" id="map_width" class="input_box" value="20">
+        Height: <input type="text" id="map_height" class="input_box" value="10">
+    </form>
+    <button type="button" id="resize_button">Resize</button>
+    <button type="button" id="fill_button">Fill current</button>
+    <button type="button" id="water_button">Water</button>
+    <select id="water_level">
+        <option value="0">0</value>
+        <option value="1">1</value>
+        <option value="2">2</value>
+        <option value="3">3</value>
+        <option value="4" selected>4</value>
+    </select>
+    
+    <button type="button" id="wall_button">Wall</button>
+    <button type="button" id="sky_button">Sky</button>
+    <button type="button" id="save_button">Save to ASCII</button>
+    <button type="button" id="load_button">Load from ASCII</button>
+</div>
+
+<div id="status_div">
+    <h3>Current: </h3>
+    <form><input type="text" id="status_text" readonly></input></form>
+</div>
+
+<div id="io_div">
+    <h2>ASCII:</h2>
+    <textarea id="io" rows="50" cols="50"></textarea>
+</div>
+
+</body>
+</html>

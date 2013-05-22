@@ -1,0 +1,54 @@
+#canvas_div
+{
+position:fixed;
+top:0px;
+left:0px;
+border-style:solid;
+border-color:#000000;
+border-width:1px;
+}
+
+#button_div
+{
+position:absolute;
+top:820px;
+left:0px;
+}
+
+.input_box
+{
+width: 28;
+}
+
+form
+{
+display: inline;
+}
+
+#status_div
+{
+position:absolute;
+top:850px;
+left:0px;
+}
+
+#io_div
+{
+position:absolute;
+top:10px;
+left:820px;
+}
+
+#io
+{
+font-family:"Courier New";
+font-size:x-small;
+border-width:1px;
+border-style:solid;
+border-color:#000000;
+}
+
+h3
+{
+display: inline;
+}
