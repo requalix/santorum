@@ -28,7 +28,7 @@ Crafty.c('Actor', {
 
 Crafty.c('Water', {
 
-  level: 4,
+  waterLevel: 4,
 
   init: function() {
     this.requires('Actor, Color')
@@ -39,9 +39,9 @@ Crafty.c('Water', {
   // Level 0 is no water what so ever
   // Scales linearly inbetween
   setLevel: function(_level) {
-    level = _level;
+    waterLevel = _level;
     Crafty.e('Block').at(0,0)
-      .setP(this.x, this.y + (level * this.h / 4));
+      .setP(this.x, this.y + (waterLevel * this.h / 4));
     return this;
   }
 });
@@ -189,15 +189,15 @@ Crafty.c('Dude', {
       .bind('stopCallback', function(){
         console.log('detectEnterWater');
         if(this.hit('Water').length > 0){
-          this.tryMakeSplash();
+          this.detectEnterWater();
         }
       })
       .bind('EnterFrame', function(){ 
         this.dripCounter += MAX_HEALTH - this.health;
         if(this.dripCounter >= DRIP_RATE){
           this.dripCounter -= DRIP_RATE;
-          var x = this.x + Math.random()*this.w;
-          var y = this.y + Math.random()*this.h;
+          var x = this.x + Math.random()*(this.w - Game.map_grid.tile.width/8); // subtract width of water droplet
+          var y = this.y + Math.random()*Math.random()*this.h; // favour generating at the top, IMO better effect
           Crafty.e('WaterDroplet')
             .initP(x,y)
             .initV(0,0);
@@ -206,20 +206,33 @@ Crafty.c('Dude', {
   },
 
   detectEnterWater: function() {
-    if(this.hit('Water'))
-      this.tryMakeSplash();
+    puddles = this.hit('Water');
+    var shallowestPool = 5;
+    for(var i=0; i<puddles.length; ++i)
+      // there should be a better way to test if the object is 'Water'
+      if(puddles[i].obj.waterLevel !== undefined){
+        console.log('depth = ', puddles[i].obj.waterLevel);
+        if(puddles[i].obj.waterLevel < shallowestPool)
+          shallowestPool = puddles[i].obj.waterLevel;
+      }
+    if(shallowestPool !== 5)
+      console.log('shallowestPool = ', shallowestPool);
+    if(shallowestPool < 5)
+      this.tryMakeSplash(shallowestPool);
   },
 
-  tryMakeSplash: function() {
-    // only if the player pressed the make splash button to accelerate downwards rapidly
-    Crafty.e('Splash')
-      .initP(this.x+this.w/2, this.y+this.h-32)
-      .initV(-7, -7)
-      .setCreator(this.id);
-    Crafty.e('Splash')
-      .initP(this.x+this.w/2, this.y+this.h-32)
-      .initV(7, -7)
-      .setCreator(this.id);
+  tryMakeSplash: function(shallowestPool) {
+    for(var i=0; i<shallowestPool; ++i){
+      // only if the player pressed the make splash button to accelerate downwards rapidly
+      Crafty.e('Splash')
+        .initP(this.x+this.w/2, this.y+this.h-32)
+        .initV(-7-i, -7-i)
+        .setCreator(this.id);
+      Crafty.e('Splash')
+        .initP(this.x+this.w/2, this.y+this.h-32)
+        .initV(7+i, -7-i)
+        .setCreator(this.id);
+    }
   },
 
   setId: function(name) {
