@@ -77,6 +77,7 @@ Crafty.c('Twoway2000', {
       this.x += this._movement.x;
       this.y += this._movement.y;
       if (this._movement.y) {
+        // WTF: Umm, doesn't this mean if I press jump whilst at the top of my arc that I will double jump?
         this._can_jump = false;
       }
       this._movement.y += this.gravity;
@@ -113,6 +114,8 @@ Crafty.c('Twoway2000', {
           this.y -= this._movement.y;
           this._movement.y = 0;
           if (this.y < them[i].obj.y) {
+            // WTF, why does movement get set to zero but then rebeing able to jump is only conditional, I am
+            // finding quite often when I am in the water that I can't jump again for a while
             this._can_jump = true;
             this.y = them[i].obj.y - this.h;
           } else {
@@ -125,11 +128,151 @@ Crafty.c('Twoway2000', {
 });
 
 Crafty.c('Dude', {
+
+  // attributes:
+  id: null,
+  health: 1000,
+
   init: function() {
     this.count=0;
     this.requires('Actor')
       .attr({w: Game.map_grid.tile.width, h: Game.map_grid.tile.height * 2});
     this.requires('Twoway2000, Color, Collision')
-      .color('#817679');
+      .color('#817679')
+      .detectEnterWater();
+  },
+
+  detectEnterWater: function() {
+    return this.onHit('Water', this.tryMakeSplash);
+  },
+
+  tryMakeSplash: function() {
+    // only if the player pressed the make splash button to accelerate downwards rapidly
+    if(this._movement.y >= 64-0.5){
+      Crafty.e('Splash')
+        .initP(this.x+this.w/2, this.y+this.h-32)
+        .initV(-7, -7)
+        .setCreator(this.id);
+      Crafty.e('Splash')
+        .initP(this.x+this.w/2, this.y+this.h-32)
+        .initV(7, -7)
+        .setCreator(this.id);
+    }
+  },
+
+  setId: function(name) {
+    this.id = name;
+    return this;
+  },
+
+  generateWaterDroplets: function() {
+    if(Math.random()*1000 > health){
+      var x = this.x + Math.random()*this.w;
+      var y = this.y + Math.random()*this.h;
+      Crafty.e('WaterDroplet')
+        .initP(x,y)
+        .initV(0,0);
+    }
   }
+
 });
+
+Crafty.c('Splash', {
+
+
+  // attributes:
+  DAMAGE_TO_PLAYER: 100,
+  gravity: 0.2,
+  creator: null,
+
+  init: function() {
+    this.requires('Actor')
+      .attr({w: Game.map_grid.tile.width/4, h: Game.map_grid.tile.height/4});
+    this.requires('Freefall, Color, Collision')
+      .color('#0000ff')
+      .onHit('Block', function(){ return this.destroy(); })
+      .onHit('Dude', function(objs) {
+        for(var i=0; i<objs.length; ++i)
+          if(objs[i].obj.id != this.creator){
+            objs[i].obj.health -= this.DAMAGE_TO_PLAYER;
+            this.destroy();
+          }
+      });
+  },
+
+  setCreator: function(_creator){
+    this.creator = _creator;
+  },
+
+  initP: function(_x, _y){
+    this.x = _x;
+    this.y = _y;
+    return this;
+  },
+
+  initV: function(_x, _y){
+    if(this._movement){
+      this._movement.x = _x;
+      this._movement.y = _y;
+    }
+    return this;
+  }
+
+});
+
+Crafty.c('WaterDroplet', {
+
+  // attributes
+  gravity: 0.2,
+
+  init: function() {
+    this.requires('Actor')
+      .attr({w: Game.map_grid.tile.width/8, h: Game.map_grid.tile.height/8});
+    this.requires('Freefall, Color, Collision')
+      .color('#0000ff')
+      .onHit('Block', function(){ return this.destroy(); })
+  },
+
+  initP: function(_x, _y){
+    this.x = _x;
+    this.y = _y;
+    return this;
+  },
+
+  initV: function(_x, _y){
+    if(this._movement){
+      this._movement.x = _x;
+      this._movement.y = _y;
+    }
+    return this;
+  }
+
+});
+
+// Just obeys gravity, nobody controls the entity
+Crafty.c('Freefall', {
+
+  // attributes:
+  speed: 8, // when push left and right how many pixels per frame to move
+  gravity: 0.2,
+
+  init: function() {
+    this.requires('Actor, Collision').
+      attr({
+        _movement: { x: 0, y: 0},
+      });
+    this.bind('EnterFrame', function() {
+      this._movement.y += this.gravity;
+      this.x += this._movement.x;
+      this.y += this._movement.y;
+    });
+  }
+
+});
+
+
+
+
+
+
+
