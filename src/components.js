@@ -82,6 +82,7 @@ Crafty.c('Movable', {
             this.x = them[i].obj.x + them[i].obj.w;
           }
         }
+        break;
       }
       this.y += this._movement.y - 0.01;
 
@@ -92,7 +93,7 @@ Crafty.c('Movable', {
           // have this happen first, avoid the possibility of being moved back outside the water for the collision check
           this.y -= this._movement.y;
           if(this._movement.y > 50)
-            Crafty.trigger('stopCallback', this);
+            this.trigger('stopCallback');
           this._movement.y = 0;
           if (this.y < them[i].obj.y) {
             // WTF, why does movement get set to zero but then rebeing able to jump is only conditional, I am
@@ -103,6 +104,7 @@ Crafty.c('Movable', {
             this.y = them[i].obj.y + them[i].obj.h;
           }
         }
+        break;
       }
     });
   }
@@ -190,16 +192,14 @@ Crafty.c('Dude', {
 
   tryMakeSplash: function() {
     // only if the player pressed the make splash button to accelerate downwards rapidly
-    //if(this._movement.y >= 64-0.5){
-      Crafty.e('Splash')
-        .initP(this.x+this.w/2, this.y+this.h-32)
-        .initV(-7, -7)
-        .setCreator(this.id);
-      Crafty.e('Splash')
-        .initP(this.x+this.w/2, this.y+this.h-32)
-        .initV(7, -7)
-        .setCreator(this.id);
-    //}
+    Crafty.e('Splash')
+      .initP(this.x+this.w/2, this.y+this.h-32)
+      .initV(-7, -7)
+      .setCreator(this.id);
+    Crafty.e('Splash')
+      .initP(this.x+this.w/2, this.y+this.h-32)
+      .initV(7, -7)
+      .setCreator(this.id);
   },
 
   setId: function(name) {
