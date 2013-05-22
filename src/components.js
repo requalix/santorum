@@ -81,8 +81,8 @@ Crafty.c('Movable', {
           } else {
             this.x = them[i].obj.x + them[i].obj.w;
           }
+          break;
         }
-        break;
       }
       this.y += this._movement.y - 0.01;
 
@@ -91,20 +91,22 @@ Crafty.c('Movable', {
           continue;
         if (this.intersect(them[i].obj.x, them[i].obj.y, them[i].obj.w, them[i].obj.h)) {
           // have this happen first, avoid the possibility of being moved back outside the water for the collision check
-          this.y -= this._movement.y;
-          if(this._movement.y > 50)
-            this.trigger('stopCallback');
-          this._movement.y = 0;
+          // this.y -= this._movement.y;
+          // only if land on the ground (not hit your head on the roof)
           if (this.y < them[i].obj.y) {
-            // WTF, why does movement get set to zero but then rebeing able to jump is only conditional, I am
-            // finding quite often when I am in the water that I can't jump again for a while
+            if(this._movement.y > 5 && !this._can_jump){
+              this.y -= this._movement.y;
+              this.trigger('stopCallback');
+              this.y += this._movement.y;
+            }
             this._can_jump = true;
             this.y = them[i].obj.y - this.h;
           } else {
             this.y = them[i].obj.y + them[i].obj.h;
           }
+          this._movement.y = 0;
+          break;
         }
-        break;
       }
     });
   }
@@ -132,7 +134,8 @@ Crafty.c('Twoway2000', {
         this._movement.x = this.speed;
       }
       if (!!Crafty.keydown[splash]) {
-        this._movement.y = 64;
+        if(!this._can_jump)
+          this._movement.y = 64;
       }
       if (!Crafty.keydown[left] && !Crafty.keydown[right]) {
         this._movement.x = 0;
