@@ -39,9 +39,9 @@ Crafty.c('Water', {
   // Level 0 is no water what so ever
   // Scales linearly inbetween
   setLevel: function(_level) {
-    waterLevel = _level;
+    this.waterLevel = _level;
     Crafty.e('Block').at(0,0)
-      .setP(this.x, this.y + (waterLevel * this.h / 4));
+      .setP(this.x, this.y + (this.waterLevel * this.h / 4));
     return this;
   }
 });
@@ -103,27 +103,26 @@ Crafty.c('Movable', {
       this.y += this._movement.y - 0.01;
 
       var yMoving = (this._movement.y > 50) && !this._can_jump;
+      var makeASplash = 0;
       for(var i = 0; i < them.length; i++) {
         if (entity !== undefined && them[i].obj != entity)
           continue;
         if (this.intersect(them[i].obj.x, them[i].obj.y, them[i].obj.w, them[i].obj.h)) {
-          // have this happen first, avoid the possibility of being moved back outside the water for the collision check
-          // this.y -= this._movement.y;
-          // only if land on the ground (not hit your head on the roof)
+          // case land on the ground
           if (this.y < them[i].obj.y) {
             this._can_jump = true;
             this.y = them[i].obj.y - this.h;
-            if(yMoving){
-              this.trigger('stopCallback');
-              yMoving = 0;
-            }
+            if(yMoving)
+              makeASplash = 1;
+          // case hit your head on the roof
           } else {
             this.y = them[i].obj.y + them[i].obj.h;
           }
           this._movement.y = 0;
-          break;
         }
       }
+      if(makeASplash)
+        this.trigger('stopCallback');
     });
   }
 });
