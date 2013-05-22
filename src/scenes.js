@@ -1,3 +1,4 @@
+var level_data;
 Crafty.scene(
 
   'Level1',
@@ -13,17 +14,36 @@ Crafty.scene(
       .twoway2000(Crafty.keys['LEFT_ARROW'], Crafty.keys['RIGHT_ARROW'], Crafty.keys['UP_ARROW'], Crafty.keys['DOWN_ARROW'])
       .color('#f6bda9').setId('Player2');
 
-    for(i=0;i<Game.map_grid.width;i++) {
-      for(j=0;j<Game.map_grid.height;j++) {
-        if(i==0 || i== Game.map_grid.width-1 || j== 0) {
-          Crafty.e('Block').at(i,j);
-        } else if(j==Game.map_grid.height-1 || j==Game.map_grid.height-2) {
-          if ((i >= 7 && i<=14 ) && j == Game.map_grid.height - 2) {
-            Crafty.e('Water').at(i,j).setLevel(2+(i%3));
-          } else {
-            Crafty.e('Block').at(i,j);
-          }
+   $.ajax({url: "1",
+           type: "GET",
+           dataType: "text",
+           success: function (data) { level_data = data; },
+           async: false
+   });
+
+   var i = 0;
+   for(var row = 0; row < Game.map_grid.height; row++) {
+      for(var col = 0; col < Game.map_grid.width; col++) {
+        while (level_data[i] == "\n") {
+            i++;
         }
+        var tile = level_data[i];
+        switch (tile) {
+            case ".":
+                Crafty.e('Block').at(col, row);
+                break;
+            case " ":
+                break;
+            default:
+                if (tile >= 0 && tile <= 4) {
+                    // water
+                    Crafty.e('Water').at(col, row).setLevel(tile);
+                } else {
+                    console.log("unknown data")
+                }
+                break;
+        }
+        i++;
       }
     }
 
