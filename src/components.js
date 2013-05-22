@@ -38,6 +38,10 @@ Crafty.c('Block', {
     this.requires('Actor, Color')
       .color('#ADA96E');
   },
+
+  moveDownFraction: function(f) {
+    this.y += f*this.h;
+  }
 });
 
 function overlap(lower1, upper1, lower2, upper2) {
