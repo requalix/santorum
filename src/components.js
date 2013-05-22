@@ -54,6 +54,7 @@ Crafty.c('Movable', {
       .attr( { _movement: { x: 0, y: 0} });
   },
 
+  // attributes
   gravity: 0.2,
 
   move: function() {
@@ -70,7 +71,8 @@ Crafty.c('Movable', {
       // first check all x...
       this.y -= this._movement.y - 0.01;
       for(var i = 0; i < them.length; i++) {
-        if (entity !== undefined && them[i].obj != entity) continue;
+        if (entity !== undefined && them[i].obj != entity) 
+          continue;
         if (this.intersect(them[i].obj.x, them[i].obj.y, them[i].obj.w, them[i].obj.h)) {
           this.x -= this._movement.x;
           this._movement.x = 0;
@@ -84,9 +86,13 @@ Crafty.c('Movable', {
       this.y += this._movement.y - 0.01;
 
       for(var i = 0; i < them.length; i++) {
-        if (entity !== undefined && them[i].obj != entity) continue;
+        if (entity !== undefined && them[i].obj != entity)
+          continue;
         if (this.intersect(them[i].obj.x, them[i].obj.y, them[i].obj.w, them[i].obj.h)) {
+          // have this happen first, avoid the possibility of being moved back outside the water for the collision check
           this.y -= this._movement.y;
+          if(this._movement.y > 50)
+            Crafty.trigger('stopCallback', this);
           this._movement.y = 0;
           if (this.y < them[i].obj.y) {
             // WTF, why does movement get set to zero but then rebeing able to jump is only conditional, I am
@@ -159,7 +165,12 @@ Crafty.c('Dude', {
       .attr({w: Game.map_grid.tile.width, h: Game.map_grid.tile.height * 2})
       .requires('Twoway2000, Color, Collision')
       .color('#817679')
-      .detectEnterWater()
+      .bind('stopCallback', function(){
+        console.log('detectEnterWater');
+        if(this.hit('Water').length > 0){
+          this.tryMakeSplash();
+        }
+      })
       .bind('EnterFrame', function(){ 
         this.dripCounter += MAX_HEALTH - this.health;
         if(this.dripCounter >= DRIP_RATE){
@@ -174,12 +185,12 @@ Crafty.c('Dude', {
   },
 
   detectEnterWater: function() {
-    return this.onHit('Water', this.tryMakeSplash);
+    this.hit('Water', this.tryMakeSplash);
   },
 
   tryMakeSplash: function() {
     // only if the player pressed the make splash button to accelerate downwards rapidly
-    if(this._movement.y >= 64-0.5){
+    //if(this._movement.y >= 64-0.5){
       Crafty.e('Splash')
         .initP(this.x+this.w/2, this.y+this.h-32)
         .initV(-7, -7)
@@ -188,7 +199,7 @@ Crafty.c('Dude', {
         .initP(this.x+this.w/2, this.y+this.h-32)
         .initV(7, -7)
         .setCreator(this.id);
-    }
+    //}
   },
 
   setId: function(name) {
