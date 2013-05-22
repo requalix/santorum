@@ -157,7 +157,6 @@ Crafty.c('Dude', {
       .color('#817679')
       .detectEnterWater()
       .bind('EnterFrame', function(){ 
-        console.log('health = ', this.health);
         this.dripCounter += MAX_HEALTH - this.health;
         if(this.dripCounter >= DRIP_RATE){
           this.dripCounter -= DRIP_RATE;
