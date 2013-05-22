@@ -139,19 +139,35 @@ Crafty.c('Twoway2000', {
   },
 });
 
+var MAX_HEALTH = 1000;
+var DRIP_RATE = 5*MAX_HEALTH;
 Crafty.c('Dude', {
 
   // attributes:
   id: null,
-  health: 1000,
+  health: MAX_HEALTH,
+  dripCounter: 0,
 
   init: function() {
     this.count=0;
-    this.requires('Actor')
-      .attr({w: Game.map_grid.tile.width, h: Game.map_grid.tile.height * 2});
-    this.requires('Twoway2000, Color, Collision')
+    this
+      .requires('Actor')
+      .attr({w: Game.map_grid.tile.width, h: Game.map_grid.tile.height * 2})
+      .requires('Twoway2000, Color, Collision')
       .color('#817679')
-      .detectEnterWater();
+      .detectEnterWater()
+      .bind('EnterFrame', function(){ 
+        console.log('health = ', this.health);
+        this.dripCounter += MAX_HEALTH - this.health;
+        if(this.dripCounter >= DRIP_RATE){
+          this.dripCounter -= DRIP_RATE;
+          var x = this.x + Math.random()*this.w;
+          var y = this.y + Math.random()*this.h;
+          Crafty.e('WaterDroplet')
+            .initP(x,y)
+            .initV(0,0);
+        }
+      });
   },
 
   detectEnterWater: function() {
@@ -176,16 +192,6 @@ Crafty.c('Dude', {
     this.id = name;
     return this;
   },
-
-  generateWaterDroplets: function() {
-    if(Math.random()*1000 > health){
-      var x = this.x + Math.random()*this.w;
-      var y = this.y + Math.random()*this.h;
-      Crafty.e('WaterDroplet')
-        .initP(x,y)
-        .initV(0,0);
-    }
-  }
 
 });
 
