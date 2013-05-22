@@ -74,18 +74,18 @@ Crafty.c('Movable', {
         if (entity !== undefined && them[i].obj != entity) 
           continue;
         if (this.intersect(them[i].obj.x, them[i].obj.y, them[i].obj.w, them[i].obj.h)) {
-          this.x -= this._movement.x;
+          // this.x -= this._movement.x; // redundant?
           this._movement.x = 0;
           if (this.x < them[i].obj.x) {
             this.x = them[i].obj.x - this.w;
           } else {
             this.x = them[i].obj.x + them[i].obj.w;
           }
-          break;
         }
       }
       this.y += this._movement.y - 0.01;
 
+      var yMoving = (this._movement.y > 50) && !this._can_jump;
       for(var i = 0; i < them.length; i++) {
         if (entity !== undefined && them[i].obj != entity)
           continue;
@@ -94,13 +94,12 @@ Crafty.c('Movable', {
           // this.y -= this._movement.y;
           // only if land on the ground (not hit your head on the roof)
           if (this.y < them[i].obj.y) {
-            if(this._movement.y > 5 && !this._can_jump){
-              this.y -= this._movement.y;
-              this.trigger('stopCallback');
-              this.y += this._movement.y;
-            }
             this._can_jump = true;
             this.y = them[i].obj.y - this.h;
+            if(yMoving){
+              this.trigger('stopCallback');
+              yMoving = 0;
+            }
           } else {
             this.y = them[i].obj.y + them[i].obj.h;
           }
@@ -190,7 +189,8 @@ Crafty.c('Dude', {
   },
 
   detectEnterWater: function() {
-    this.hit('Water', this.tryMakeSplash);
+    if(this.hit('Water'))
+      this.tryMakeSplash();
   },
 
   tryMakeSplash: function() {
