@@ -1,4 +1,4 @@
-// The Grid component allows an element to be located
+/ The Grid component allows an element to be located
 //  on a grid of tiles
 Crafty.c('Grid', {
   init: function() {
@@ -44,18 +44,69 @@ function overlap(lower1, upper1, lower2, upper2) {
   return Math.max(lower1, lower2) < Math.min(upper1, upper2);
 }
 
-// Also does gravity.
+Crafty.c('Movable', {
+  init: function() {
+    this.requires('Actor')
+      .attr( { _movement: { x: 0, y: 0} });
+  },
+
+  gravity: 0.2,
+
+  move: function() {
+    return this.bind('EnterFrame', function() {
+      this.x += this._movement.x;
+      this.y += this._movement.y;
+      this._movement.y += this.gravity;
+    });
+  },
+
+  stopOn: function(what, entity) {
+    return this.onHit(what, function(them) {
+
+      // first check all x...
+      this.y -= this._movement.y - 0.01;
+      for(var i = 0; i < them.length; i++) {
+        if (entity !== undefined && them[i].obj != entity) continue;
+        if (this.intersect(them[i].obj.x, them[i].obj.y, them[i].obj.w, them[i].obj.h)) {
+          this.x -= this._movement.x;
+          this._movement.x = 0;
+          if (this.x < them[i].obj.x) {
+            this.x = them[i].obj.x - this.w;
+          } else {
+            this.x = them[i].obj.x + them[i].obj.w;
+          }
+        }
+      }
+      this.y += this._movement.y - 0.01;
+
+      for(var i = 0; i < them.length; i++) {
+        if (entity !== undefined && them[i].obj != entity) continue;
+        if (this.intersect(them[i].obj.x, them[i].obj.y, them[i].obj.w, them[i].obj.h)) {
+          this.y -= this._movement.y;
+          this._movement.y = 0;
+          if (this.y < them[i].obj.y) {
+            // WTF, why does movement get set to zero but then rebeing able to jump is only conditional, I am
+            // finding quite often when I am in the water that I can't jump again for a while
+            this._can_jump = true;
+            this.y = them[i].obj.y - this.h;
+          } else {
+            this.y = them[i].obj.y + them[i].obj.h;
+          }
+        }
+      }
+    });
+  }
+});
+
 Crafty.c('Twoway2000', {
 
   // attributes:
   speed: 8, // when push left and right how many pixels per frame to move
   jump_speed: 10, // how many pixels per frame up should we go
-  gravity: 0.2,
 
   init: function() {
-    this.requires('Actor').
+    this.requires('Movable').
       attr( {
-        _movement: { x: 0, y: 0},
         _can_jump: true
       });
   },
@@ -74,13 +125,9 @@ Crafty.c('Twoway2000', {
       if (!Crafty.keydown[left] && !Crafty.keydown[right]) {
         this._movement.x = 0;
       }
-      this.x += this._movement.x;
-      this.y += this._movement.y;
       if (this._movement.y) {
-        // WTF: Umm, doesn't this mean if I press jump whilst at the top of my arc that I will double jump?
         this._can_jump = false;
       }
-      this._movement.y += this.gravity;
     }).bind('KeyDown', function(e) {
       if (e.key == jump) {
         if (this._can_jump) {
@@ -88,43 +135,8 @@ Crafty.c('Twoway2000', {
           this._movement.y -= this.jump_speed;
         }
       }
-    }).stopOn('Block').stopOn('Dude');
+    }).move().stopOn('Block').stopOn('Dude');
   },
-
-  stopOn: function(what) {
-    return this.onHit(what, function(them) {
-
-      // first check all x...
-      this.y -= this._movement.y - 0.01;
-      for(var i = 0; i < them.length; i++) {
-        if (this.intersect(them[i].obj.x, them[i].obj.y, them[i].obj.w, them[i].obj.h)) {
-          this.x -= this._movement.x;
-          this._movement.x = 0;
-          if (this.x < them[i].obj.x) {
-            this.x = them[i].obj.x - this.w;
-          } else {
-            this.x = them[i].obj.x + them[i].obj.w;
-          }
-        }
-      }
-      this.y += this._movement.y - 0.01;
-
-      for(var i = 0; i < them.length; i++) {
-        if (this.intersect(them[i].obj.x, them[i].obj.y, them[i].obj.w, them[i].obj.h)) {
-          this.y -= this._movement.y;
-          this._movement.y = 0;
-          if (this.y < them[i].obj.y) {
-            // WTF, why does movement get set to zero but then rebeing able to jump is only conditional, I am
-            // finding quite often when I am in the water that I can't jump again for a while
-            this._can_jump = true;
-            this.y = them[i].obj.y - this.h;
-          } else {
-            this.y = them[i].obj.y + them[i].obj.h;
-          }
-        }
-      }
-    });
-  }
 });
 
 Crafty.c('Dude', {
