@@ -175,7 +175,7 @@ Crafty.c('Twoway2000', {
         this._movement.x = this.speed;
       }
       if (!!Crafty.keydown[splash]) {
-        if(!this._can_jump && this._movement.y > -this.jump_speed/2)
+        if(!this._can_jump && this._movement.y > -this.jump_speed*3/4)
           this._movement.y = 64;
       }
       if (!Crafty.keydown[left] && !Crafty.keydown[right]) {
@@ -208,6 +208,8 @@ Crafty.c('Dude', {
 
   init: function() {
     this.count=0;
+    Crafty.e('HealthBar')
+      .setCreator(this);
     this
       .requires('Actor')
       .attr({w: Game.map_grid.tile.width, h: Game.map_grid.tile.height * 2, z: -2})
@@ -219,6 +221,7 @@ Crafty.c('Dude', {
         }
       })
       .bind('EnterFrame', function(){ 
+        console.log('Dude._globalZ = ', this._globalZ);
         this.dripCounter += MAX_HEALTH - this.health;
         while(this.dripCounter >= DRIP_RATE){
           this.dripCounter -= DRIP_RATE;
@@ -250,11 +253,11 @@ Crafty.c('Dude', {
       // only if the player pressed the make splash button to accelerate downwards rapidly
       Crafty.e('Splash')
         .initP(this.x+this.w/2, this.y+this.h-((shallowestPool+0.25)*Game.map_grid.tile.height/4))
-        .initV((-7-i)*(yVel+60)/120, (-4-i)*(yVel+60)/120)
+        .initV((-7-i)*(yVel+60)/120, (-5.5-i)*(yVel+60)/120)
         .setCreator(this.id);
       Crafty.e('Splash')
         .initP(this.x+this.w/2, this.y+this.h-((shallowestPool+0.25)*Game.map_grid.tile.height/4))
-        .initV((7+i)*(yVel+60)/120, (-4-i)*(yVel+60)/120)
+        .initV((7+i)*(yVel+60)/120, (-5.5-i)*(yVel+60)/120)
         .setCreator(this.id);
     }
   },
@@ -313,8 +316,10 @@ Crafty.c('UmbrellaInUse', {
       .requires('Twoway2000, Color, Collision')
       .color('#FF0000')
       .bind('EnterFrame', function(){
-        this.x = creator.x - Game.map_grid.tile.width/4; // Center the umbrella over the owner
-        this.y = creator.y - this.h;
+        if(creator !== null){
+          this.x = creator.x - Game.map_grid.tile.width/4; // Center the umbrella over the owner
+          this.y = creator.y - this.h;
+        }
       });
   },
 
@@ -322,6 +327,32 @@ Crafty.c('UmbrellaInUse', {
     creator = _creator;
   }
 
+});
+
+Crafty.c('HealthBar', {
+  
+  creator: null,
+
+  init: function() {
+    this
+      .requires('Actor')
+      .attr({w: Game.map_grid.tile.width, h: 0, z: 5})
+      .requires('Twoway2000, Color, Collision')
+      .color('#7777ff')
+      .bind('EnterFrame', function(){
+        if(creator !== null){
+          console.log('HealthBar._globalZ = ', this._globalZ);
+          this.x = creator.x;
+          this.h = (MAX_HEALTH-creator.health)/MAX_HEALTH;
+          this.y = creator.y + creator.h - this.h;
+        }
+      });
+  },
+
+  setCreator: function(_creator){
+    creator = _creator;
+  }
+  
 });
 
 Crafty.c('Splash', {
@@ -374,7 +405,7 @@ Crafty.c('WaterDroplet', {
 
   init: function() {
     this.requires('Actor')
-      .attr({w: Game.map_grid.tile.width/8, h: Game.map_grid.tile.height/8, z: -1});
+      .attr({w: Game.map_grid.tile.width/8, h: Game.map_grid.tile.height/8});
     this.requires('Color, Collision, Movable')
       .color('#0000ff')
       .onHit('Block', function(){ return this.destroy(); })
