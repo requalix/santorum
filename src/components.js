@@ -274,12 +274,9 @@ Crafty.c('Dude', {
       if(this.health <= 0){
         Game.gameOver = true;
         this.color('#0000ff');
-
-        // WTF: my most recent attempt at getting delays to work
         this.timeout(function(){
           Crafty.scene('Level1');
         }, 2000);
-
       }
     }
   },
