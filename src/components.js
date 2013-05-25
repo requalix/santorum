@@ -297,6 +297,12 @@ Crafty.c('Umbrella', {
           this.destroy();
         }
       });
+  },
+
+  // when created with the 'at' method, the umbrella will sit at the top left of the cell, we don't want this
+  recentre: function() {
+    this.x += Game.map_grid.tile.width/4;
+    this.y += Game.map_grid.tile.height/4;
   }
 });
 

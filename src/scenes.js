@@ -32,8 +32,15 @@ Crafty.scene(
       }
     }
 
-    // create one umbrella
-    Crafty.e('Umbrella').at(Game.map_grid.width-2, Game.map_grid.height-3);
+    // Hacky - I create a dummy block under one that already exists in order to construct the timeout function
+    // After 10 seconds, create an umbrella at a random location
+    Crafty.e('Block').at(0,0).timeout(function(){
+      var x = 1+Math.floor(Math.random()*(Game.map_grid.width-3));
+      var y = Game.map_grid.height-3;
+      Crafty.e('Umbrella')
+        .at(x, y)
+        .recentre();
+    }, 10000);
 
   },
 
