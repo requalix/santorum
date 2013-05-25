@@ -58,6 +58,31 @@ Crafty.c('Block', {
   }
 });
 
+Crafty.c('Cloud', {
+
+  // variables
+  wind: 0,
+
+  init: function() {
+    this.requires('Actor, Color')
+      .color('#CCCCCC')
+      // make rain
+      .bind('EnterFrame', function() {
+        if(Math.random() < 0.05){
+          var x = this.x + Math.random()*(this.w - Game.map_grid.tile.width/8); // subtract width of rain droplet
+          var y = this.y + this.h + 1; // start the rain slightly below the cloud, doesn't really matter since it can't collide with it anyway
+          Crafty.e('RainDroplet')
+            .initP(x,y)
+            .initV(wind,10);
+        }
+      });
+  },
+
+  setWind: function(_wind) {
+    wind = _wind;
+  }
+});
+
 function overlap(lower1, upper1, lower2, upper2) {
   return Math.max(lower1, lower2) < Math.min(upper1, upper2);
 }
@@ -102,7 +127,8 @@ Crafty.c('Movable', {
       }
       this.y += this._movement.y - 0.01;
 
-      var yMoving = (this._movement.y > 50) && !this._can_jump;
+      var yMoving = (this._movement.y > 6) && !this._can_jump;
+      var yVel = this._movement.y;
       var makeASplash = 0;
       for(var i = 0; i < them.length; i++) {
         if (entity !== undefined && them[i].obj != entity)
@@ -122,7 +148,7 @@ Crafty.c('Movable', {
         }
       }
       if(makeASplash)
-        this.trigger('stopCallback');
+        this.trigger('stopCallback', yVel);
     });
   }
 });
@@ -149,7 +175,7 @@ Crafty.c('Twoway2000', {
         this._movement.x = this.speed;
       }
       if (!!Crafty.keydown[splash]) {
-        if(!this._can_jump)
+        if(!this._can_jump && this._movement.y > -this.jump_speed*3/4)
           this._movement.y = 64;
       }
       if (!Crafty.keydown[left] && !Crafty.keydown[right]) {
@@ -165,12 +191,14 @@ Crafty.c('Twoway2000', {
           this._movement.y -= this.jump_speed;
         }
       }
-    }).move().stopOn('Block').stopOn('Dude');
+    }).move()
+    .stopOn('Block')
+    // .stopOn('Dude'); // Commented out to prevent one player standing on another and blocking them from playing
   },
 });
 
-var MAX_HEALTH = 1000;
-var DRIP_RATE = 5*MAX_HEALTH;
+var MAX_HEALTH = 3000;
+var DRIP_RATE = MAX_HEALTH/2;
 Crafty.c('Dude', {
 
   // attributes:
@@ -180,56 +208,56 @@ Crafty.c('Dude', {
 
   init: function() {
     this.count=0;
+    Crafty.e('HealthBar')
+      .setCreator(this);
     this
       .requires('Actor')
-      .attr({w: Game.map_grid.tile.width, h: Game.map_grid.tile.height * 2})
+      .attr({w: Game.map_grid.tile.width, h: Game.map_grid.tile.height * 2, z: -2})
       .requires('Twoway2000, Color, Collision')
       .color('#817679')
-      .bind('stopCallback', function(){
-        console.log('detectEnterWater');
+      .bind('stopCallback', function(yVel){
         if(this.hit('Water').length > 0){
-          this.detectEnterWater();
+          this.detectEnterWater(yVel);
         }
       })
       .bind('EnterFrame', function(){ 
+        //console.log('Dude._globalZ = ', this._globalZ);
         this.dripCounter += MAX_HEALTH - this.health;
-        if(this.dripCounter >= DRIP_RATE){
+        while(this.dripCounter >= DRIP_RATE){
           this.dripCounter -= DRIP_RATE;
           var x = this.x + Math.random()*(this.w - Game.map_grid.tile.width/8); // subtract width of water droplet
           var y = this.y + Math.random()*Math.random()*this.h; // favour generating at the top, IMO better effect
+          var v = 8*(MAX_HEALTH-this.health)/MAX_HEALTH; // nice effect, wetter you are the harder the drops poor off you
           Crafty.e('WaterDroplet')
             .initP(x,y)
-            .initV(0,0);
+            .initV(0,v);
         }
       });
   },
 
-  detectEnterWater: function() {
+  detectEnterWater: function(yVel) {
     puddles = this.hit('Water');
     var shallowestPool = 5;
     for(var i=0; i<puddles.length; ++i)
       // there should be a better way to test if the object is 'Water'
       if(puddles[i].obj.waterLevel !== undefined){
-        console.log('depth = ', puddles[i].obj.waterLevel);
         if(puddles[i].obj.waterLevel < shallowestPool)
           shallowestPool = puddles[i].obj.waterLevel;
       }
-    if(shallowestPool !== 5)
-      console.log('shallowestPool = ', shallowestPool);
-    if(shallowestPool < 5)
-      this.tryMakeSplash(shallowestPool);
+    if(0 < shallowestPool && shallowestPool < 5)
+      this.makeSplashs(shallowestPool, yVel);
   },
 
-  tryMakeSplash: function(shallowestPool) {
+  makeSplashs: function(shallowestPool, yVel) {
     for(var i=0; i<shallowestPool; ++i){
       // only if the player pressed the make splash button to accelerate downwards rapidly
       Crafty.e('Splash')
-        .initP(this.x+this.w/2, this.y+this.h-32)
-        .initV(-7-i, -7-i)
+        .initP(this.x+this.w/2, this.y+this.h-((shallowestPool+0.25)*Game.map_grid.tile.height/4))
+        .initV((-7-i)*(yVel+60)/120, (-5.5-i)*(yVel+60)/120)
         .setCreator(this.id);
       Crafty.e('Splash')
-        .initP(this.x+this.w/2, this.y+this.h-32)
-        .initV(7+i, -7-i)
+        .initP(this.x+this.w/2, this.y+this.h-((shallowestPool+0.25)*Game.map_grid.tile.height/4))
+        .initV((7+i)*(yVel+60)/120, (-5.5-i)*(yVel+60)/120)
         .setCreator(this.id);
     }
   },
@@ -239,6 +267,92 @@ Crafty.c('Dude', {
     return this;
   },
 
+  dealDamage: function(damage) {
+    if(!Game.gameOver){
+      this.health -= damage;
+      if(this.health <= 0){
+        Game.gameOver = true;
+        this.color('#0000ff');
+        this.timeout(function(){
+          Crafty.scene('Level1');
+        }, 2000);
+      }
+    }
+  },
+
+});
+
+Crafty.c('Umbrella', {
+  init: function() {
+    this
+      .requires('Actor')
+      .attr({w: Game.map_grid.tile.width/2, h: Game.map_grid.tile.height/2})
+      .requires('Color, Collision')
+      .color('#FF0000')
+      .onHit('Dude', function(objs) {
+        for(var i=0; i<objs.length; ++i){
+          Crafty.e('UmbrellaInUse')
+            .setCreator(objs[i].obj);
+          this.destroy();
+        }
+      });
+  },
+
+  // when created with the 'at' method, the umbrella will sit at the top left of the cell, we don't want this
+  recentre: function() {
+    this.x += Game.map_grid.tile.width/4;
+    this.y += Game.map_grid.tile.height/4;
+  }
+});
+
+Crafty.c('UmbrellaInUse', {
+
+  creator: null,
+
+  init: function() {
+    this
+      .requires('Actor')
+      .attr({w: Game.map_grid.tile.width * 3/2, h: Game.map_grid.tile.height/2})
+      .requires('Twoway2000, Color, Collision')
+      .color('#FF0000')
+      .bind('EnterFrame', function(){
+        if(creator !== null){
+          this.x = creator.x - Game.map_grid.tile.width/4; // Center the umbrella over the owner
+          this.y = creator.y - this.h;
+        }
+      });
+  },
+
+  setCreator: function(_creator){
+    creator = _creator;
+  }
+
+});
+
+Crafty.c('HealthBar', {
+  
+  creator: null,
+
+  init: function() {
+    this
+      .requires('Actor')
+      .attr({w: Game.map_grid.tile.width, h: 0, z: 5})
+      .requires('Twoway2000, Color, Collision')
+      .color('#7777ff')
+      .bind('EnterFrame', function(){
+        if(creator !== null){
+          //console.log('HealthBar._globalZ = ', this._globalZ);
+          this.x = creator.x;
+          this.h = (MAX_HEALTH-creator.health)/MAX_HEALTH;
+          this.y = creator.y + creator.h - this.h;
+        }
+      });
+  },
+
+  setCreator: function(_creator){
+    creator = _creator;
+  }
+  
 });
 
 Crafty.c('Splash', {
@@ -257,7 +371,7 @@ Crafty.c('Splash', {
       .onHit('Dude', function(objs) {
         for(var i=0; i<objs.length; ++i)
           if(objs[i].obj.id != this.creator){
-            objs[i].obj.health -= this.DAMAGE_TO_PLAYER;
+            objs[i].obj.dealDamage(this.DAMAGE_TO_PLAYER);
             this.destroy();
           }
       })
@@ -314,5 +428,43 @@ Crafty.c('WaterDroplet', {
 
 });
 
+Crafty.c('RainDroplet', {
+
+  // attributes
+  DAMAGE_TO_PLAYER: 5,
+  gravity: 0.0, // my preference is for this to not have gravity, to move uniformly, feel free to change
+
+  init: function() {
+    this.requires('Actor')
+      .attr({w: Game.map_grid.tile.width/8, h: Game.map_grid.tile.height/8});
+    this.requires('Color, Collision, Movable')
+      .color('#0000ff')
+      .onHit('Block', function(){ return this.destroy(); })
+      .onHit('UmbrellaInUse', function(){ return this.destroy(); })
+      .onHit('Water', function(){ return this.destroy(); })
+      .onHit('Dude', function(objs) {
+        for(var i=0; i<objs.length; ++i){
+          objs[i].obj.dealDamage(this.DAMAGE_TO_PLAYER);
+          this.destroy();
+        }
+      })
+      .move().attr({ _movement: {x: 0, y: 0}, gravity: 0.0 }); // my preference is for this to not have gravity, to move uniformly, feel free to change
+  },
+
+  initP: function(_x, _y){
+    this.x = _x;
+    this.y = _y;
+    return this;
+  },
+
+  initV: function(_x, _y){
+    if(this._movement){
+      this._movement.x = _x;
+      this._movement.y = _y;
+    }
+    return this;
+  }
+
+});
 
 
