@@ -58,6 +58,31 @@ Crafty.c('Block', {
   }
 });
 
+Crafty.c('Cloud', {
+
+  // variables
+  wind: 0,
+
+  init: function() {
+    this.requires('Actor, Color')
+      .color('#CCCCCC')
+      // make rain
+      .bind('EnterFrame', function() {
+        if(Math.random() < 0.1){
+          var x = this.x + Math.random()*(this.w - Game.map_grid.tile.width/8); // subtract width of rain droplet
+          var y = this.y + this.h + 1; // start the rain slightly below the cloud, doesn't really matter since it can't collide with it anyway
+          Crafty.e('RainDroplet')
+            .initP(x,y)
+            .initV(wind,10);
+        }
+      });
+  },
+
+  setWind: function(_wind) {
+    wind = _wind;
+  }
+});
+
 function overlap(lower1, upper1, lower2, upper2) {
   return Math.max(lower1, lower2) < Math.min(upper1, upper2);
 }
@@ -318,5 +343,34 @@ Crafty.c('WaterDroplet', {
 
 });
 
+Crafty.c('RainDroplet', {
+
+  // attributes
+  gravity: 0.0, // my preference is for this to not have gravity, to move uniformly, feel free to change
+
+  init: function() {
+    this.requires('Actor')
+      .attr({w: Game.map_grid.tile.width/8, h: Game.map_grid.tile.height/8});
+    this.requires('Color, Collision, Movable')
+      .color('#0000ff')
+      .onHit('Block', function(){ return this.destroy(); })
+      .move().attr({ _movement: {x: 0, y: 0}, gravity: 0.0 }); // my preference is for this to not have gravity, to move uniformly, feel free to change
+  },
+
+  initP: function(_x, _y){
+    this.x = _x;
+    this.y = _y;
+    return this;
+  },
+
+  initV: function(_x, _y){
+    if(this._movement){
+      this._movement.x = _x;
+      this._movement.y = _y;
+    }
+    return this;
+  }
+
+});
 
 

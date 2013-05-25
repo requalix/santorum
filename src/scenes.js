@@ -15,8 +15,11 @@ Crafty.scene(
 
     for(i=0;i<Game.map_grid.width;i++) {
       for(j=0;j<Game.map_grid.height;j++) {
-        if(i==0 || i== Game.map_grid.width-1 || j== 0) {
-          Crafty.e('Block').at(i,j);
+        if(i==0 || i== Game.map_grid.width-1 || j==0) {
+          if(j==0 && i!=0 && i!=Game.map_grid.width-1)
+            Crafty.e('Cloud').at(i,j).setWind(0);
+          else
+            Crafty.e('Block').at(i,j);
         } else if(j==Game.map_grid.height-1 || j==Game.map_grid.height-2) {
           if ((i >= 7 && i<=14 ) && j == Game.map_grid.height - 2) {
             Crafty.e('Water').at(i,j).setLevel(2+(i%3));
