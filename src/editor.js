@@ -20,15 +20,15 @@ var current_tile;
 var grid;
 var water_level = 4;    //default is 4, entire block is water
 
-var p1_spawn = { row: 0, col: 0 };
-var p2_spawn = { row: 0, col: 0 };
+var p1_spawn;
+var p2_spawn;
 
 $(window).load(main);
 
 function main() {
     init();
     register_callbacks();
-    load_level(initial_level);
+    load_level_backend(initial_level);
     dump_level();
     draw_grid();
     draw_grid(); // makes lines thicker!
@@ -110,8 +110,8 @@ function draw_grid() {
     }
 
     context.font = horizontal_cell_size.toString() + "px Arial";
-    context.fillText("1", p1_spawn.x * (horizontal_cell_size + GRID_LINE_WIDTH), p1_spawn.y);
-    context.fillText("2", p2_spawn.x * (horizontal_cell_size + GRID_LINE_WIDTH), p2_spawn.y);
+    context.fillText("1", p1_spawn.col * (horizontal_cell_size + GRID_LINE_WIDTH), p1_spawn.row * (vertical_cell_size + GRID_LINE_WIDTH));
+    context.fillText("2", p2_spawn.col * (horizontal_cell_size + GRID_LINE_WIDTH), p2_spawn.row * (vertical_cell_size + GRID_LINE_WIDTH));
 
     context.fillStyle = oldStyle;
 }
@@ -165,41 +165,13 @@ function fill_entire_grid() {
 }
 
 function dump_level() {
-    var level = "";
-
-    for (var row = 0; row < NUM_ROWS; ++row) {
-        for (var col = 0; col < NUM_COLS; ++col) {
-            var tile = grid[row][col];
-            var char;
-            switch(tile) {
-                case "wall":
-                    char = ".";
-                break;
-                case "sky":
-                    char = " ";
-                break;
-                case "cloud":
-                    char = "c";
-                break;
-                default:
-                    if (tile >= 0 && tile <= 4) {
-                        char = tile;
-                    } else {
-                        console.log("somethign broke, recommend restarting page");
-                    }
-                break;
-            }
-            level += char;
-        }
-        level += "\n";
-    }
 
     var jsonlevel = {
         rows: NUM_ROWS,
         cols: NUM_COLS,
         p1: p1_spawn,
         p2: p2_spawn,
-        level_data: level
+        level_data: grid
     };
 
     $("#io").val(JSON.stringify(jsonlevel));
@@ -211,17 +183,16 @@ function load_level() {
 }
 
 function load_level_from_str(input_json) {
-
-    var jsonlevel = JSON.parse(input_json);
-    load_level(jsonlevel);
+    var s = JSON.parse(input_json);
+    load_level_backend(s);
 }
 
-function load_level(jsonlevel) {
+function load_level_backend(jsonlevel) {
     NUM_ROWS = jsonlevel.rows;
     NUM_COLS = jsonlevel.cols;
     p1_spawn = jsonlevel.p1;
     p2_spawn = jsonlevel.p2;
-    var level = jsonlevel.level_data;
+    grid = jsonlevel.level_data;
     
     $("#io")[0].rows = NUM_ROWS;
     $("#io")[0].cols = NUM_COLS;
@@ -229,49 +200,16 @@ function load_level(jsonlevel) {
     vertical_cell_size = (canvas.height - GRID_LINE_WIDTH * NUM_ROWS - 1) / NUM_ROWS;
     horizontal_cell_size = (canvas.width - GRID_LINE_WIDTH * NUM_COLS - 1) / NUM_COLS;
     
-    grid = new Array(NUM_ROWS);
-    
-    set_current_tile("wall");
-    for (var row = 0; row < NUM_ROWS; ++row) {
-        grid[row] = new Array(NUM_COLS);
-        for (var col = 0; col < NUM_COLS; ++col) {
-            fill_cell(col, row);
-        }
-    }
-
-    var i = 0;
-
     for (var row = 0; row < NUM_ROWS; ++row) {
         for (var col = 0; col < NUM_COLS; ++col) {
-            var tile = level[i];
-            while (tile == "\n") {
-                ++i;
-                tile = level[i];
+            var tile = grid[row][col];
+            if (tile >= 0 && tile <= 4) {
+                set_current_tile("water");
+                water_level = tile;
+            } else {
+                set_current_tile(grid[row][col]);
             }
-            var entry;
-            switch(tile) {
-                case " ":
-                    entry = "sky";
-                break;
-                case ".":
-                    entry = "wall";
-                break;
-                case "c":
-                    entry = "cloud";
-                break;
-                default:
-                    // assume water
-                    if (tile >= 0 && tile <= 4) {
-                        entry = "water";
-                        water_level = tile;
-                    } else {
-                        console.log("wtf you doin, giving me incorrect data!?");
-                    }
-                break;
-            }
-            set_current_tile(entry);
             fill_cell(col, row);
-            i++;
         }
     }
 }
@@ -279,16 +217,6 @@ function load_level(jsonlevel) {
 var initial_level = { rows: 10,
 cols: 20,
 p1: {row: 7, col: 2},
-p2: {row: 7, col: 3},
-level_data: "\
-....................\n\
-.                  .\n\
-.                  .\n\
-.                  .\n\
-.                  .\n\
-.                  .\n\
-.                  .\n\
-.                  .\n\
-.......34234234.....\n\
-....................\n"
+p2: {row: 7, col: 4},
+level_data: [["wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall"],["wall","sky","sky","sky","sky","sky","sky","sky","cloud","cloud","sky","sky","sky","sky","sky","sky","sky","sky","sky","wall"],["wall","sky","sky","sky","sky","sky","sky","sky","cloud","cloud","sky","sky","sky","sky","sky","sky","sky","sky","sky","wall"],["wall","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","wall"],["wall","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","wall"],["wall","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","wall"],["wall","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","wall"],["wall","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","sky","wall"],["wall","wall","wall","wall","wall","wall","wall","3","4","2","3","4","2","3","4","wall","wall","wall","wall","wall"],["wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall","wall"]]
 };
