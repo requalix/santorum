@@ -5,6 +5,8 @@ Crafty.scene(
   // what happens when entering this level, e.g. construct the level
   function(){ 
 
+    Game.gameOver = false;
+
     Crafty.e('Dude').at(4, 5)
       .twoway2000(Crafty.keys['A'], Crafty.keys['D'], Crafty.keys['W'], Crafty.keys['S'])
       .color('#583726').setId('Player1');
