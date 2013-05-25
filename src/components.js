@@ -175,7 +175,7 @@ Crafty.c('Twoway2000', {
         this._movement.x = this.speed;
       }
       if (!!Crafty.keydown[splash]) {
-        if(!this._can_jump)
+        if(!this._can_jump && this._movement.y > -this.jump_speed/2)
           this._movement.y = 64;
       }
       if (!Crafty.keydown[left] && !Crafty.keydown[right]) {
@@ -308,11 +308,11 @@ Crafty.c('UmbrellaInUse', {
   init: function() {
     this
       .requires('Actor')
-      .attr({w: Game.map_grid.tile.width, h: Game.map_grid.tile.height/2})
+      .attr({w: Game.map_grid.tile.width * 3/2, h: Game.map_grid.tile.height/2})
       .requires('Twoway2000, Color, Collision')
       .color('#FF0000')
       .bind('EnterFrame', function(){
-        this.x = creator.x;
+        this.x = creator.x - Game.map_grid.tile.width/4; // Center the umbrella over the owner
         this.y = creator.y - this.h;
       });
   },
