@@ -11,6 +11,10 @@ Game = {
     }
   },
 
+  // set this to true when one of the players has won, prevents the other player from dying also
+  // due to things like rain, or still active splash
+  gameOver: false,
+
   width: function() { return this.map_grid.width * this.map_grid.tile.width; },
   height: function() { return this.map_grid.height * this.map_grid.tile.height; },
 

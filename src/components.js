@@ -246,10 +246,10 @@ Crafty.c('Dude', {
     if(shallowestPool !== 5)
       console.log('shallowestPool = ', shallowestPool);
     if(shallowestPool < 5)
-      this.tryMakeSplash(shallowestPool, yVel);
+      this.makeSplashs(shallowestPool, yVel);
   },
 
-  tryMakeSplash: function(shallowestPool, yVel) {
+  makeSplashs: function(shallowestPool, yVel) {
     for(var i=0; i<shallowestPool; ++i){
       // only if the player pressed the make splash button to accelerate downwards rapidly
       Crafty.e('Splash')
@@ -266,6 +266,16 @@ Crafty.c('Dude', {
   setId: function(name) {
     this.id = name;
     return this;
+  },
+
+  dealDamage: function(damage) {
+    if(!Game.gameOver){
+      this.health -= damage;
+      if(this.health <= 0){
+        Game.gameOver = true;
+        this.color('#0000ff');
+      }
+    }
   },
 
 });
@@ -286,7 +296,7 @@ Crafty.c('Splash', {
       .onHit('Dude', function(objs) {
         for(var i=0; i<objs.length; ++i)
           if(objs[i].obj.id != this.creator){
-            objs[i].obj.health -= this.DAMAGE_TO_PLAYER;
+            objs[i].obj.dealDamage(this.DAMAGE_TO_PLAYER);
             this.destroy();
           }
       })
@@ -346,6 +356,7 @@ Crafty.c('WaterDroplet', {
 Crafty.c('RainDroplet', {
 
   // attributes
+  DAMAGE_TO_PLAYER: 5,
   gravity: 0.0, // my preference is for this to not have gravity, to move uniformly, feel free to change
 
   init: function() {
@@ -354,6 +365,13 @@ Crafty.c('RainDroplet', {
     this.requires('Color, Collision, Movable')
       .color('#0000ff')
       .onHit('Block', function(){ return this.destroy(); })
+      .onHit('Water', function(){ return this.destroy(); })
+      .onHit('Dude', function(objs) {
+        for(var i=0; i<objs.length; ++i){
+          objs[i].obj.dealDamage(this.DAMAGE_TO_PLAYER);
+          this.destroy();
+        }
+      })
       .move().attr({ _movement: {x: 0, y: 0}, gravity: 0.0 }); // my preference is for this to not have gravity, to move uniformly, feel free to change
   },
 
