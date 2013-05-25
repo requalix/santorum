@@ -68,7 +68,7 @@ Crafty.c('Cloud', {
       .color('#CCCCCC')
       // make rain
       .bind('EnterFrame', function() {
-        if(Math.random() < 0.1){
+        if(Math.random() < 0.05){
           var x = this.x + Math.random()*(this.w - Game.map_grid.tile.width/8); // subtract width of rain droplet
           var y = this.y + this.h + 1; // start the rain slightly below the cloud, doesn't really matter since it can't collide with it anyway
           Crafty.e('RainDroplet')
@@ -193,13 +193,12 @@ Crafty.c('Twoway2000', {
       }
     }).move()
     .stopOn('Block')
-    // .stopOn('Dude'); // Commented out to prevent one player standing on another and blocking them from
-    // playing
+    // .stopOn('Dude'); // Commented out to prevent one player standing on another and blocking them from playing
   },
 });
 
-var MAX_HEALTH = 2000;
-var DRIP_RATE = 2*MAX_HEALTH;
+var MAX_HEALTH = 3000;
+var DRIP_RATE = MAX_HEALTH/2;
 Crafty.c('Dude', {
 
   // attributes:
@@ -211,24 +210,24 @@ Crafty.c('Dude', {
     this.count=0;
     this
       .requires('Actor')
-      .attr({w: Game.map_grid.tile.width, h: Game.map_grid.tile.height * 2})
+      .attr({w: Game.map_grid.tile.width, h: Game.map_grid.tile.height * 2, z: -2})
       .requires('Twoway2000, Color, Collision')
       .color('#817679')
       .bind('stopCallback', function(yVel){
-        console.log('detectEnterWater');
         if(this.hit('Water').length > 0){
           this.detectEnterWater(yVel);
         }
       })
       .bind('EnterFrame', function(){ 
         this.dripCounter += MAX_HEALTH - this.health;
-        if(this.dripCounter >= DRIP_RATE){
+        while(this.dripCounter >= DRIP_RATE){
           this.dripCounter -= DRIP_RATE;
           var x = this.x + Math.random()*(this.w - Game.map_grid.tile.width/8); // subtract width of water droplet
           var y = this.y + Math.random()*Math.random()*this.h; // favour generating at the top, IMO better effect
+          var v = 8*(MAX_HEALTH-this.health)/MAX_HEALTH; // nice effect, wetter you are the harder the drops poor off you
           Crafty.e('WaterDroplet')
             .initP(x,y)
-            .initV(0,0);
+            .initV(0,v);
         }
       });
   },
@@ -239,12 +238,9 @@ Crafty.c('Dude', {
     for(var i=0; i<puddles.length; ++i)
       // there should be a better way to test if the object is 'Water'
       if(puddles[i].obj.waterLevel !== undefined){
-        console.log('depth = ', puddles[i].obj.waterLevel);
         if(puddles[i].obj.waterLevel < shallowestPool)
           shallowestPool = puddles[i].obj.waterLevel;
       }
-    if(shallowestPool !== 5)
-      console.log('shallowestPool = ', shallowestPool);
     if(0 < shallowestPool && shallowestPool < 5)
       this.makeSplashs(shallowestPool, yVel);
   },
@@ -254,11 +250,11 @@ Crafty.c('Dude', {
       // only if the player pressed the make splash button to accelerate downwards rapidly
       Crafty.e('Splash')
         .initP(this.x+this.w/2, this.y+this.h-((shallowestPool+0.25)*Game.map_grid.tile.height/4))
-        .initV((-7-i)*(yVel+60)/120, (-7-i)*(yVel+60)/120)
+        .initV((-7-i)*(yVel+60)/120, (-4-i)*(yVel+60)/120)
         .setCreator(this.id);
       Crafty.e('Splash')
         .initP(this.x+this.w/2, this.y+this.h-((shallowestPool+0.25)*Game.map_grid.tile.height/4))
-        .initV((7+i)*(yVel+60)/120, (-7-i)*(yVel+60)/120)
+        .initV((7+i)*(yVel+60)/120, (-4-i)*(yVel+60)/120)
         .setCreator(this.id);
     }
   },
@@ -378,7 +374,7 @@ Crafty.c('WaterDroplet', {
 
   init: function() {
     this.requires('Actor')
-      .attr({w: Game.map_grid.tile.width/8, h: Game.map_grid.tile.height/8});
+      .attr({w: Game.map_grid.tile.width/8, h: Game.map_grid.tile.height/8, z: -1});
     this.requires('Color, Collision, Movable')
       .color('#0000ff')
       .onHit('Block', function(){ return this.destroy(); })
