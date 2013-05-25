@@ -245,7 +245,7 @@ Crafty.c('Dude', {
       }
     if(shallowestPool !== 5)
       console.log('shallowestPool = ', shallowestPool);
-    if(shallowestPool < 5)
+    if(0 < shallowestPool && shallowestPool < 5)
       this.makeSplashs(shallowestPool, yVel);
   },
 
@@ -253,11 +253,11 @@ Crafty.c('Dude', {
     for(var i=0; i<shallowestPool; ++i){
       // only if the player pressed the make splash button to accelerate downwards rapidly
       Crafty.e('Splash')
-        .initP(this.x+this.w/2, this.y+this.h-32)
+        .initP(this.x+this.w/2, this.y+this.h-((shallowestPool+0.25)*Game.map_grid.tile.height/4))
         .initV((-7-i)*(yVel+60)/120, (-7-i)*(yVel+60)/120)
         .setCreator(this.id);
       Crafty.e('Splash')
-        .initP(this.x+this.w/2, this.y+this.h-32)
+        .initP(this.x+this.w/2, this.y+this.h-((shallowestPool+0.25)*Game.map_grid.tile.height/4))
         .initV((7+i)*(yVel+60)/120, (-7-i)*(yVel+60)/120)
         .setCreator(this.id);
     }
