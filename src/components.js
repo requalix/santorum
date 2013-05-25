@@ -102,7 +102,8 @@ Crafty.c('Movable', {
       }
       this.y += this._movement.y - 0.01;
 
-      var yMoving = (this._movement.y > 50) && !this._can_jump;
+      var yMoving = (this._movement.y > 6) && !this._can_jump;
+      var yVel = this._movement.y;
       var makeASplash = 0;
       for(var i = 0; i < them.length; i++) {
         if (entity !== undefined && them[i].obj != entity)
@@ -122,7 +123,7 @@ Crafty.c('Movable', {
         }
       }
       if(makeASplash)
-        this.trigger('stopCallback');
+        this.trigger('stopCallback', yVel);
     });
   }
 });
@@ -165,12 +166,15 @@ Crafty.c('Twoway2000', {
           this._movement.y -= this.jump_speed;
         }
       }
-    }).move().stopOn('Block').stopOn('Dude');
+    }).move()
+    .stopOn('Block')
+    // .stopOn('Dude'); // Commented out to prevent one player standing on another and blocking them from
+    // playing
   },
 });
 
-var MAX_HEALTH = 1000;
-var DRIP_RATE = 5*MAX_HEALTH;
+var MAX_HEALTH = 2000;
+var DRIP_RATE = 10*MAX_HEALTH;
 Crafty.c('Dude', {
 
   // attributes:
@@ -185,10 +189,10 @@ Crafty.c('Dude', {
       .attr({w: Game.map_grid.tile.width, h: Game.map_grid.tile.height * 2})
       .requires('Twoway2000, Color, Collision')
       .color('#817679')
-      .bind('stopCallback', function(){
+      .bind('stopCallback', function(yVel){
         console.log('detectEnterWater');
         if(this.hit('Water').length > 0){
-          this.detectEnterWater();
+          this.detectEnterWater(yVel);
         }
       })
       .bind('EnterFrame', function(){ 
@@ -204,7 +208,7 @@ Crafty.c('Dude', {
       });
   },
 
-  detectEnterWater: function() {
+  detectEnterWater: function(yVel) {
     puddles = this.hit('Water');
     var shallowestPool = 5;
     for(var i=0; i<puddles.length; ++i)
@@ -217,19 +221,19 @@ Crafty.c('Dude', {
     if(shallowestPool !== 5)
       console.log('shallowestPool = ', shallowestPool);
     if(shallowestPool < 5)
-      this.tryMakeSplash(shallowestPool);
+      this.tryMakeSplash(shallowestPool, yVel);
   },
 
-  tryMakeSplash: function(shallowestPool) {
+  tryMakeSplash: function(shallowestPool, yVel) {
     for(var i=0; i<shallowestPool; ++i){
       // only if the player pressed the make splash button to accelerate downwards rapidly
       Crafty.e('Splash')
         .initP(this.x+this.w/2, this.y+this.h-32)
-        .initV(-7-i, -7-i)
+        .initV((-7-i)*(yVel+60)/120, (-7-i)*(yVel+60)/120)
         .setCreator(this.id);
       Crafty.e('Splash')
         .initP(this.x+this.w/2, this.y+this.h-32)
-        .initV(7+i, -7-i)
+        .initV((7+i)*(yVel+60)/120, (-7-i)*(yVel+60)/120)
         .setCreator(this.id);
     }
   },
