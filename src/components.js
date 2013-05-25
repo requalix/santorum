@@ -199,7 +199,7 @@ Crafty.c('Twoway2000', {
 });
 
 var MAX_HEALTH = 2000;
-var DRIP_RATE = 10*MAX_HEALTH;
+var DRIP_RATE = 2*MAX_HEALTH;
 Crafty.c('Dude', {
 
   // attributes:
@@ -281,6 +281,45 @@ Crafty.c('Dude', {
       }
     }
   },
+
+});
+
+Crafty.c('Umbrella', {
+  init: function() {
+    this
+      .requires('Actor')
+      .attr({w: Game.map_grid.tile.width/2, h: Game.map_grid.tile.height/2})
+      .requires('Color, Collision')
+      .color('#FF0000')
+      .onHit('Dude', function(objs) {
+        for(var i=0; i<objs.length; ++i){
+          Crafty.e('UmbrellaInUse')
+            .setCreator(objs[i].obj);
+          this.destroy();
+        }
+      });
+  }
+});
+
+Crafty.c('UmbrellaInUse', {
+
+  creator: null,
+
+  init: function() {
+    this
+      .requires('Actor')
+      .attr({w: Game.map_grid.tile.width, h: Game.map_grid.tile.height/2})
+      .requires('Twoway2000, Color, Collision')
+      .color('#FF0000')
+      .bind('EnterFrame', function(){
+        this.x = creator.x;
+        this.y = creator.y - this.h;
+      });
+  },
+
+  setCreator: function(_creator){
+    creator = _creator;
+  }
 
 });
 
@@ -369,6 +408,7 @@ Crafty.c('RainDroplet', {
     this.requires('Color, Collision, Movable')
       .color('#0000ff')
       .onHit('Block', function(){ return this.destroy(); })
+      .onHit('UmbrellaInUse', function(){ return this.destroy(); })
       .onHit('Water', function(){ return this.destroy(); })
       .onHit('Dude', function(objs) {
         for(var i=0; i<objs.length; ++i){

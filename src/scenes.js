@@ -32,6 +32,9 @@ Crafty.scene(
       }
     }
 
+    // create one umbrella
+    Crafty.e('Umbrella').at(Game.map_grid.width-2, Game.map_grid.height-3);
+
   },
 
   // what happens when exiting this level, e.g. unbinding callbacks
