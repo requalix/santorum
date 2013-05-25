@@ -302,6 +302,7 @@ Crafty.c('Umbrella', {
   recentre: function() {
     this.x += Game.map_grid.tile.width/4;
     this.y += Game.map_grid.tile.height/4;
+    return this;
   }
 });
 
@@ -467,4 +468,11 @@ Crafty.c('RainDroplet', {
 
 });
 
+Crafty.c('Title', {
 
+    init: function() {
+        this.requires('Text')
+            .text('omgwtfbbq');
+    }
+
+});

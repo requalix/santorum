@@ -1,5 +1,17 @@
 Crafty.scene(
 
+    'Menu',
+
+    function() {
+
+        Crafty.e('Title');
+
+    }
+);
+
+
+Crafty.scene(
+
   'Level1',
 
   // what happens when entering this level, e.g. construct the level
@@ -20,12 +32,12 @@ Crafty.scene(
       for(var col = 0; col < Game.map_grid.width; col++) {
             var tile = level_data.level_data[row][col];
         switch (tile) {
-            case "wall":
+            case 'wall':
                 Crafty.e('Block').at(col, row);
                 break;
-            case "sky":
+            case 'sky':
                 break;
-            case "cloud":
+            case 'cloud':
                 Crafty.e('Cloud').at(col, row).setWind(0);
                 break;
             default:
@@ -33,22 +45,22 @@ Crafty.scene(
                     // water
                     Crafty.e('Water').at(col, row).setLevel(parseInt(tile, 10));
                 } else {
-                    console.log("unknown data")
+                    console.log('unknown data');
                 }
                 break;
         }
       }
     }
 
-    // Hacky - I create a dummy block under one that already exists in order to construct the timeout function
-    // After 10 seconds, create an umbrella at a random location
-    Crafty.e('Block').at(0,0).timeout(function(){
-      var x = 1+Math.floor(Math.random()*(Game.map_grid.width-3));
-      var y = Game.map_grid.height-3;
-      Crafty.e('Umbrella')
-        .at(x, y)
-        .recentre();
-    }, 10000);
+    // After 10 seconds, move the umbrella onto the field in a random location
+   Crafty.e('Umbrella')
+       .at(-1, -1)
+       .recentre()
+       .timeout(function() {
+               var x = 1+Math.floor(Math.random()*(Game.map_grid.width-3));
+               var y = Game.map_grid.height-3;
+               this.at(x, y);
+               }, 10000);
 
   },
 

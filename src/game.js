@@ -23,9 +23,9 @@ Game = {
   start: function() {
 
     // get level 1 data
-   level_data = $.ajax( {  url: "1",
-                               type: "GET",
-                               dataType: "json",
+   level_data = $.ajax( {  url: '1',
+                               type: 'GET',
+                               dataType: 'json',
                                async: false
                              }).responseText;
 
@@ -36,6 +36,8 @@ Game = {
     // Start crafty and set a background color so that we can see it's working
     Crafty.init(Game.width(), Game.height());
     Crafty.background('#bef');
+
+    Crafty.scene('Menu');
 
     Crafty.scene('Level1');
 
