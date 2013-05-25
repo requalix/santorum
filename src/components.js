@@ -276,7 +276,9 @@ Crafty.c('Dude', {
         this.color('#0000ff');
 
         // WTF: my most recent attempt at getting delays to work
-        this.timeout(Crafty.scene('Level1'), 2000);
+        this.timeout(function(){
+          Crafty.scene('Level1');
+        }, 2000);
 
       }
     }
