@@ -31,7 +31,7 @@ Crafty.scene(
             default:
                 if (tile >= 0 && tile <= 4) {
                     // water
-                    Crafty.e('Water').at(col, row).setLevel(tile);
+                    Crafty.e('Water').at(col, row).setLevel(parseInt(tile, 10));
                 } else {
                     console.log("unknown data")
                 }

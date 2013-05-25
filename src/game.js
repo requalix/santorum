@@ -4,8 +4,8 @@ var level_data;
 Game = {
 
   map_grid: {
-    width:  20, // how many cells
-    height: 10,
+    width:  0, // how many cells
+    height: 0, // init at zero to check what we do later works
     tile: {
       width:  64, // pixels for each cell
       height: 64
@@ -30,9 +30,8 @@ Game = {
                              }).responseText;
 
    level_data = JSON.parse(level_data);
-   // hacky bs to access "Game"
-   this.Game.map_grid_width = level_data.cols;
-   this.Game.map_grid.height = level_data.rows;
+   Game.map_grid.width = level_data.cols;
+   Game.map_grid.height = level_data.rows;
 
     // Start crafty and set a background color so that we can see it's working
     Crafty.init(Game.width(), Game.height());
