@@ -471,8 +471,39 @@ Crafty.c('RainDroplet', {
 Crafty.c('Title', {
 
     init: function() {
-        this.requires('Text')
-            .text('omgwtfbbq');
+        this.requires('Text, Grid, 2D, Canvas')
+            .textFont({'size': '50px', family: 'Courier'})
+            .text('_SANTORUM_');
+    }
+
+});
+
+Crafty.c('StartText', {
+
+    init: function() {
+        this.requires('Text, Grid, 2D, Canvas')
+            .text('Press enter to begin')
+            .textFont({'size': '20px', family: 'Courier'});
+    }
+
+});
+
+Crafty.c('P1Help', {
+
+    init: function() {
+        this.requires('Text, Grid, 2D, Canvas')
+            .text('insert p1 controls here')
+            .textFont({'size': '20px', family: 'Courier'});
+    }
+
+});
+
+Crafty.c('P2Help', {
+
+    init: function() {
+        this.requires('Text, Grid, 2D, Canvas')
+            .text('insert p2 controls here')
+            .textFont({'size': '20px', family: 'Courier'});
     }
 
 });

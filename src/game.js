@@ -1,5 +1,8 @@
 // based on http://buildnewgames.com/introduction-to-crafty/
-var level_data;
+
+// global variables
+var level1_data;
+var menu_data;
 
 Game = {
 
@@ -22,8 +25,27 @@ Game = {
   // Initialize and start our game
   start: function() {
 
-    // get level 1 data
-   level_data = $.ajax( {  url: '1',
+    menu_data = get_level('menu');
+    level1_data = get_level('1');
+
+    // WARNING: whichever level gets loaded first sets the craft area size
+    // we will probably want to change this at some point!
+    Crafty.init(Game.width(), Game.height());
+    Crafty.background('#bef');
+
+    Crafty.scene('Menu');
+
+    //Crafty.scene('Level1');
+
+  }
+}
+
+//helper functions
+
+
+function get_level(url) {
+    // get level data
+   var level_data = $.ajax( {  url: url,
                                type: 'GET',
                                dataType: 'json',
                                async: false
@@ -33,13 +55,5 @@ Game = {
    Game.map_grid.width = level_data.cols;
    Game.map_grid.height = level_data.rows;
 
-    // Start crafty and set a background color so that we can see it's working
-    Crafty.init(Game.width(), Game.height());
-    Crafty.background('#bef');
-
-    Crafty.scene('Menu');
-
-    Crafty.scene('Level1');
-
-  }
+   return level_data;
 }
