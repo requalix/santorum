@@ -291,6 +291,8 @@ Crafty.c('Player1', {
                           Crafty.keys['S'])
               .color('#583726')
               .setId('Player1');
+
+          this.__name = 'Player1';
           }
 });
 
@@ -303,6 +305,8 @@ Crafty.c('Player2', {
                           Crafty.keys['DOWN_ARROW'])
               .color('#f6bda9')
               .setId('Player2');
+
+          this.__name = 'Player2';
           }
 });
 
@@ -348,6 +352,7 @@ Crafty.c('UmbrellaInUse', {
       });
   },
 
+  // NOTE this probably sets a global variable, will not work if we spawn more
   setCreator: function(_creator){
     creator = _creator;
   }
@@ -512,11 +517,29 @@ Crafty.c('StartText', {
 
 });
 
-Crafty.c('P1Help', {
+Crafty.c('FloatyHelp', {
 
     init: function() {
         this.requires('Text, Grid, 2D, Canvas')
-            .text('insert p1 controls here')
+            .bind('EnterFrame', function() {
+                  if (this._owner !== null) {
+                      var pos = this._owner.at();
+                      this.at(pos.x, pos.y - 2);
+                  }
+            });
+    },
+
+    setOwner: function(owner) {
+        this._owner = owner;
+    }
+
+});
+
+Crafty.c('P1Help', {
+
+    init: function() {
+        this.requires('FloatyHelp')
+            .text('WASD')
             .textFont({'size': '20px', family: 'Courier'});
     }
 
@@ -525,8 +548,8 @@ Crafty.c('P1Help', {
 Crafty.c('P2Help', {
 
     init: function() {
-        this.requires('Text, Grid, 2D, Canvas')
-            .text('insert p2 controls here')
+        this.requires('FloatyHelp')
+            .text('Arrow keys')
             .textFont({'size': '20px', family: 'Courier'});
     }
 
