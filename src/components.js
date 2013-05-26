@@ -336,8 +336,6 @@ Crafty.c('Umbrella', {
 
 Crafty.c('UmbrellaInUse', {
 
-  creator: null,
-
   init: function() {
     this
       .requires('Actor')
@@ -346,15 +344,14 @@ Crafty.c('UmbrellaInUse', {
       .color('#FF0000')
       .bind('EnterFrame', function(){
         if(creator !== null){
-          this.x = creator.x - Game.map_grid.tile.width/4; // Center the umbrella over the owner
-          this.y = creator.y - this.h;
+          this.x = this._creator.x - Game.map_grid.tile.width/4; // Center the umbrella over the owner
+          this.y = this._creator.y - this.h;
         }
       });
   },
 
-  // NOTE this probably sets a global variable, will not work if we spawn more
-  setCreator: function(_creator){
-    creator = _creator;
+  setCreator: function(creator){
+    this._creator = creator;
   }
 
 });
