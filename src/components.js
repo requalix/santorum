@@ -282,6 +282,30 @@ Crafty.c('Dude', {
 
 });
 
+Crafty.c('Player1', {
+    init: function() {
+          this.requires('Dude')
+              .twoway2000(Crafty.keys['A'],
+                          Crafty.keys['D'],
+                          Crafty.keys['W'],
+                          Crafty.keys['S'])
+              .color('#583726')
+              .setId('Player1');
+          }
+});
+
+Crafty.c('Player2', {
+    init: function() {
+          this.requires('Dude')
+              .twoway2000(Crafty.keys['LEFT_ARROW'],
+                          Crafty.keys['RIGHT_ARROW'],
+                          Crafty.keys['UP_ARROW'],
+                          Crafty.keys['DOWN_ARROW'])
+              .color('#f6bda9')
+              .setId('Player2');
+          }
+});
+
 Crafty.c('Umbrella', {
   init: function() {
     this

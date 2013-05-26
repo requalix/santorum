@@ -27,14 +27,11 @@ Crafty.scene(
 
         grid_load_level(menu_data.level_data);
         
-        // TODO refactor players as components themselves
-        Crafty.e('Dude').at(menu_data.p1.col, menu_data.p1.row)
-          .twoway2000(Crafty.keys['A'], Crafty.keys['D'], Crafty.keys['W'], Crafty.keys['S'])
-          .color('#583726').setId('Player1');
+        Crafty.e('Player1')
+              .at(menu_data.p1.col, menu_data.p1.row);
 
-        Crafty.e('Dude').at(menu_data.p2.col, menu_data.p2.row)
-          .twoway2000(Crafty.keys['LEFT_ARROW'], Crafty.keys['RIGHT_ARROW'], Crafty.keys['UP_ARROW'], Crafty.keys['DOWN_ARROW'])
-          .color('#f6bda9').setId('Player2');
+        Crafty.e('Player2')
+              .at(menu_data.p2.col, menu_data.p2.row)
     },
 
     // "destructor"
@@ -53,32 +50,30 @@ Crafty.scene(
 
     Game.gameOver = false;
 
-    Crafty.e('Dude').at(level1_data.p1.col, level1_data.p1.row)
-      .twoway2000(Crafty.keys['A'], Crafty.keys['D'], Crafty.keys['W'], Crafty.keys['S'])
-      .color('#583726').setId('Player1');
+    Crafty.e('Player1')
+          .at(level1_data.p1.col, level1_data.p1.row);
 
-    Crafty.e('Dude').at(level1_data.p2.col, level1_data.p2.row)
-      .twoway2000(Crafty.keys['LEFT_ARROW'], Crafty.keys['RIGHT_ARROW'], Crafty.keys['UP_ARROW'], Crafty.keys['DOWN_ARROW'])
-      .color('#f6bda9').setId('Player2');
+    Crafty.e('Player2')
+          .at(level1_data.p2.col, level1_data.p2.row);
 
-   grid_load_level(level1_data.level_data);
+    grid_load_level(level1_data.level_data);
 
     // After 10 seconds, move the umbrella onto the field in a random location
-   Crafty.e('Umbrella')
-       .at(-1, -1)
-       .recentre()
-       .timeout(function() {
-                   var x = 1+Math.floor(Math.random()*(Game.map_grid.width-3));
-                   var y = Game.map_grid.height-3;
-                   this.at(x, y);
-               }, 10000);
+    Crafty.e('Umbrella')
+          .at(-1, -1)
+          .recentre()
+          .timeout(function() {
+                       var x = 1+Math.floor(Math.random()*(Game.map_grid.width-3));
+                       var y = Game.map_grid.height-3;
+                       this.at(x, y);
+                   }, 10000);
 
-  },
+    },
 
-  // what happens when exiting this level, e.g. unbinding callbacks
-  function(){
+    // what happens when exiting this level, e.g. unbinding callbacks
+    function(){
 
-  }
+    }
 
 );
 
