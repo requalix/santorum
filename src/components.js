@@ -347,10 +347,8 @@ Crafty.c('UmbrellaInUse', {
       .requires('Twoway2000, Color, Collision')
       .color('#FF0000')
       .bind('EnterFrame', function(){
-        if(creator !== null){
-          this.x = this._creator.x - Game.map_grid.tile.width/4; // Center the umbrella over the owner
-          this.y = this._creator.y - this.h;
-        }
+        this.x = this._creator.x - Game.map_grid.tile.width/4; // Center the umbrella over the owner
+        this.y = this._creator.y - this.h;
       });
   },
 
