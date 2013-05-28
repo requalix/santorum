@@ -199,6 +199,7 @@ Crafty.c('Twoway2000', {
 
 var MAX_HEALTH = 3000;
 var DRIP_RATE = 2*MAX_HEALTH;
+var dudes = [];
 Crafty.c('Dude', {
 
   // attributes:
@@ -207,6 +208,7 @@ Crafty.c('Dude', {
   dripCounter: 0,
 
   init: function() {
+    dudes.push(this);
     this.count=0;
     Crafty.e('HealthBar')
       .setCreator(this);
