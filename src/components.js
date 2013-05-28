@@ -210,8 +210,10 @@ Crafty.c('Dude', {
   init: function() {
     dudes.push(this);
     this.count=0;
+/*
     Crafty.e('HealthBar')
       .setCreator(this);
+*/
     this
       .requires('Actor')
       .attr({w: Game.map_grid.tile.width, h: Game.map_grid.tile.height * 2, z: -2})
