@@ -198,7 +198,7 @@ Crafty.c('Twoway2000', {
 });
 
 var MAX_HEALTH = 3000;
-var DRIP_RATE = MAX_HEALTH/2;
+var DRIP_RATE = 2*MAX_HEALTH;
 Crafty.c('Dude', {
 
   // attributes:
@@ -252,11 +252,11 @@ Crafty.c('Dude', {
     for(var i=0; i<shallowestPool; ++i){
       // only if the player pressed the make splash button to accelerate downwards rapidly
       Crafty.e('Splash')
-        .initP(this.x+this.w/2, this.y+this.h-((shallowestPool+0.25)*Game.map_grid.tile.height/4))
+        .initP(this.x-Game.map_grid.width/4-Game.map_grid.width, this.y+this.h-((shallowestPool+0.25)*Game.map_grid.tile.height/4))
         .initV((-7-i)*(yVel+60)/120, (-5.5-i)*(yVel+60)/120)
         .setCreator(this.id);
       Crafty.e('Splash')
-        .initP(this.x+this.w/2, this.y+this.h-((shallowestPool+0.25)*Game.map_grid.tile.height/4))
+        .initP(this.x+this.w+Game.map_grid.width/4, this.y+this.h-((shallowestPool+0.25)*Game.map_grid.tile.height/4))
         .initV((7+i)*(yVel+60)/120, (-5.5-i)*(yVel+60)/120)
         .setCreator(this.id);
     }
