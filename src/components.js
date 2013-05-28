@@ -193,7 +193,7 @@ Crafty.c('Twoway2000', {
       }
     }).move()
     .stopOn('Block')
-    // .stopOn('Dude'); // Commented out to prevent one player standing on another and blocking them from playing
+    .stopOn('Dude'); // Commented out to prevent one player standing on another and blocking them from playing
   },
 });
 
