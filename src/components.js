@@ -360,6 +360,90 @@ Crafty.c('UmbrellaInUse', {
 
 });
 
+Crafty.c('Gun', {
+  init: function() {
+    this
+      .requires('Actor')
+      .attr({w: Game.map_grid.tile.width/2, h: Game.map_grid.tile.height/2})
+      .requires('Color, Collision')
+      .color('#FFFF00')
+      .onHit('Dude', function(objs) {
+        for(var i=0; i<objs.length; ++i){
+          Crafty.e('GunInUse')
+            .setCreator(objs[i].obj);
+          this.destroy();
+        }
+      });
+  },
+
+  // when created with the 'at' method, the umbrella will sit at the top left of the cell, we don't want this
+  recentre: function() {
+    this.x += Game.map_grid.tile.width/4;
+    this.y += Game.map_grid.tile.height/4;
+    return this;
+  }
+});
+
+var SHOOT_FREQUENCY = 15;
+var SHOOT_COUNT = 15;
+Crafty.c('GunInUse', {
+
+  /* Variables
+   * _shoot
+   * _shotsLeft
+   * _facing
+   * _creator
+   */
+
+  init: function() {
+    this
+      .requires('Actor')
+      .attr({w: Game.map_grid.tile.width * 3/2, h: Game.map_grid.tile.height/4, _facing: 'L', _shoot: 0, _shotsLeft: SHOOT_COUNT})
+      .requires('Twoway2000, Color, Collision')
+      .color('#FFFF00')
+      .bind('EnterFrame', function(){
+
+        // decide which way we are facing
+        var newX = this._creator.x - Game.map_grid.tile.width/4;
+        if(newX > this.x)
+          this._facing = 'R';
+        if(newX < this.x)
+          this._facing = 'L';
+
+        // move the image to the appropriate position
+        this.x = this._creator.x - Game.map_grid.tile.width/4; // Center the umbrella over the owner
+        this.y = this._creator.y + this._creator.h/2 - this.h;
+
+        // shoot every now and then
+        if(++this._shoot == SHOOT_FREQUENCY){
+
+          // create the shot
+          var initX = this.x - Game.map_grid.width/2;
+          var initDx = -20;
+          if(this._facing == 'R'){
+            initX = this.x + this.w + Game.map_grid.width/2;
+            initDx = 20;
+          }
+          Crafty.e('Splash')
+            .initP(initX, this.y)
+            .initV(initDx, 0)
+            .setCreator(this._creator);
+
+          // handle shot counters
+          this._shoot = 0;
+          if(--this._shotsLeft == 0)
+            this.destroy();
+
+        }
+      });
+  },
+
+  setCreator: function(creator){
+    this._creator = creator;
+  }
+
+});
+
 Crafty.c('HealthBar', {
   
   creator: null,
