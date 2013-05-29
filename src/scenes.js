@@ -85,6 +85,26 @@ Crafty.scene(
                        this.recentre();
                    }, 10000);
 
+    Crafty.e('Gun')
+          .at(-1, -1)
+          .timeout(function() {
+                       var x = 1+Math.floor(Math.random()*(Game.map_grid.width-3));
+                       var y = Game.map_grid.height-4;
+
+                       // make the gun spawn far away from the players
+                       var dist = 0;
+                       for(var i=1; i<=Game.map_grid.width-2; ++i){
+                         var tryDist = min(abs(dudes[0].x-Game.map_grid.tile.width*i), abs(dudes[1].x-Game.map_grid.tile.width*i));
+                         if(tryDist > dist){
+                           dist = tryDist;
+                           x = i;
+                         }
+                       }
+
+                       this.at(x, y);
+                       this.recentre();
+                   }, 15000);
+
     },
 
     // what happens when exiting this level, e.g. unbinding callbacks
