@@ -187,6 +187,7 @@ Crafty.c('Twoway2000', {
     }).bind('KeyDown', function(e) {
       if (e.key == jump) {
         if (this._can_jump) {
+		  Crafty.audio.play("jump");
           this._can_jump = false;
           this._movement.y -= this.jump_speed;
         }
@@ -278,6 +279,7 @@ Crafty.c('Dude', {
         Game.gameOver = true;
         this.color('#0000ff');
         this.timeout(function(){
+		  Crafty.audio.stop();
           Crafty.scene('Level1');
         }, 2000);
       }
@@ -460,7 +462,7 @@ Crafty.c('WaterDroplet', {
 Crafty.c('RainDroplet', {
 
   // attributes
-  DAMAGE_TO_PLAYER: 5,
+  DAMAGE_TO_PLAYER: 20,
   gravity: 0.0, // my preference is for this to not have gravity, to move uniformly, feel free to change
 
   init: function() {
@@ -511,6 +513,16 @@ Crafty.c('StartText', {
     init: function() {
         this.requires('Text, Grid, 2D, Canvas')
             .text('Press enter to begin')
+            .textFont({'size': '20px', family: 'Courier'});
+    }
+
+});
+
+Crafty.c('HelpText', {
+
+    init: function() {
+        this.requires('Text, Grid, 2D, Canvas')
+            .text('Splash your opponent the most to win!')
             .textFont({'size': '20px', family: 'Courier'});
     }
 

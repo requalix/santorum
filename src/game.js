@@ -14,7 +14,7 @@ Game = {
       height: 64
     }
   },
-
+  
   // set this to true when one of the players has won, prevents the other player from dying also
   // due to things like rain, or still active splash
   gameOver: false,
@@ -27,6 +27,11 @@ Game = {
 
     menu_data = get_level('menu');
     level1_data = get_level('1');
+	
+	// import audio
+	Crafty.audio.add("jump", "sounds/jump.wav");
+	Crafty.audio.add("music", "sounds/music.mp3");
+	Crafty.audio.add("menu", "sounds/menu.mp3");
 
     // WARNING: whichever level gets loaded first sets the craft area size
     // we will probably want to change this at some point!

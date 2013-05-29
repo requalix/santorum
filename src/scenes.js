@@ -6,15 +6,19 @@ Crafty.scene(
     function() {
 
         Crafty.e('Title')
-            .at(Game.map_grid.width/2 - 1, Game.map_grid.height/2 - 2);
+            .at(Game.map_grid.width/2 - 1, Game.map_grid.height/2 - 3);
 
         Crafty.e('StartText')
             .at(Game.map_grid.width/2 - 1, Game.map_grid.height/2)
             .bind('KeyUp', function(e) {
                 if (e.key == Crafty.keys['ENTER']) {
+					Crafty.audio.stop();
                     Crafty.scene('Level1');
                 }
             });
+	
+		Crafty.e('HelpText')
+			  .at(Game.map_grid.width/2 - 4, Game.map_grid.height/2 - 1);
 
         grid_load_level(menu_data.level_data);
 
@@ -34,6 +38,8 @@ Crafty.scene(
         Crafty.e('P2Help')
             .at(Game.map_grid.width/2 + 5, Game.map_grid.height/2)
             .setOwner(p2);
+			
+		Crafty.audio.play("menu");
     },
 
     // "destructor"
@@ -84,6 +90,7 @@ Crafty.scene(
                        this.at(x, y);
                        this.recentre();
                    }, 10000);
+		Crafty.audio.play("music", -1);
 
     },
 
