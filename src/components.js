@@ -198,8 +198,10 @@ Crafty.c('Twoway2000', {
   },
 });
 
-var MAX_HEALTH = 3000;
+var MAX_HEALTH = 5000;
 var DRIP_RATE = 2*MAX_HEALTH;
+var NO_BOOTS_DAMAGE = 10; // damage caused by making splashes without boots
+var SPLASH_DAMAGE = 100; // damage caused by being hit by a splash
 var dudes = [];
 Crafty.c('Dude', {
 
@@ -207,6 +209,7 @@ Crafty.c('Dude', {
   id: null,
   health: MAX_HEALTH,
   dripCounter: 0,
+  _hasBoots: false,
 
   init: function() {
     dudes.push(this);
@@ -255,6 +258,9 @@ Crafty.c('Dude', {
 
   makeSplashs: function(shallowestPool, yVel) {
     for(var i=0; i<shallowestPool; ++i){
+      // making splashs costs you life if you don't have boots
+      if(!this._hasBoots)
+        this.dealDamage(NO_BOOTS_DAMAGE);
       // only if the player pressed the make splash button to accelerate downwards rapidly
       Crafty.e('Splash')
         .initP(this.x-Game.map_grid.width/4-Game.map_grid.width, this.y+this.h-((shallowestPool+0.25)*Game.map_grid.tile.height/4))
@@ -355,6 +361,51 @@ Crafty.c('UmbrellaInUse', {
   },
 
   setCreator: function(creator){
+    this._creator = creator;
+  }
+
+});
+
+Crafty.c('Boots', {
+  init: function() {
+    this
+      .requires('Actor')
+      .attr({w: Game.map_grid.tile.width/2, h: Game.map_grid.tile.height/2})
+      .requires('Color, Collision')
+      .color('#B03060')
+      .onHit('Dude', function(objs) {
+        for(var i=0; i<objs.length; ++i){
+          Crafty.e('BootsInUse')
+            .setCreator(objs[i].obj);
+          this.destroy();
+        }
+      });
+  },
+
+  // when created with the 'at' method, the umbrella will sit at the top left of the cell, we don't want this
+  recentre: function() {
+    this.x += Game.map_grid.tile.width/4;
+    this.y += Game.map_grid.tile.height/4;
+    return this;
+  }
+});
+
+Crafty.c('BootsInUse', {
+
+  init: function() {
+    this
+      .requires('Actor')
+      .attr({w: Game.map_grid.tile.width * 3/2, h: Game.map_grid.tile.height/2})
+      .requires('Twoway2000, Color, Collision')
+      .color('#B03060')
+      .bind('EnterFrame', function(){
+        this.x = this._creator.x - Game.map_grid.tile.width/4; // Center the umbrella over the owner
+        this.y = this._creator.y + 3*this._creator.h/4;
+      });
+  },
+
+  setCreator: function(creator){
+    creator._hasBoots = true;
     this._creator = creator;
   }
 
@@ -473,7 +524,6 @@ Crafty.c('HealthBar', {
 Crafty.c('Splash', {
 
   // attributes:
-  DAMAGE_TO_PLAYER: 100,
   gravity: 0.2,
   creator: null,
 
@@ -486,7 +536,7 @@ Crafty.c('Splash', {
       .onHit('Dude', function(objs) {
         for(var i=0; i<objs.length; ++i)
           if(objs[i].obj.id != this.creator){
-            objs[i].obj.dealDamage(this.DAMAGE_TO_PLAYER);
+            objs[i].obj.dealDamage(SPLASH_DAMAGE);
             this.destroy();
           }
       })
