@@ -1,11 +1,10 @@
 // based on http://buildnewgames.com/introduction-to-crafty/
 
 // global variables
-var level1_data;
-var menu_data;
 var firstPickupUmbrella = true;
 var firstPickupGun = true;
 var firstPickupBoots = true;
+var level_data = [];
 
 Game = {
 
@@ -28,28 +27,22 @@ Game = {
   // Initialize and start our game
   start: function() {
 
-    menu_data = get_level('menu');
-    level1_data = get_level('1');
-	
     // import audio
     Crafty.audio.add("jump", "sounds/jump.wav");
     Crafty.audio.add("music", "sounds/music.mp3");
     Crafty.audio.add("menu", "sounds/menu.mp3");
 
-    // WARNING: whichever level gets loaded first sets the craft area size
-    // we will probably want to change this at some point!
-    Crafty.init(Game.width(), Game.height());
-    Crafty.background('#bef');
-
-    Crafty.scene('Menu');
-
-    //Crafty.scene('Level1');
-
+    switch_level('Menu');
   }
 }
 
 //helper functions
-
+function switch_level(name) {
+    level_data[name] = get_level(name);
+    Crafty.init(Game.width(), Game.height());
+    Crafty.background('#bef');
+    Crafty.scene(name);
+}
 
 function get_level(url) {
     // get level data
@@ -57,7 +50,8 @@ function get_level(url) {
                                type: 'GET',
                                dataType: 'json',
                                async: false
-                             }).responseText;
+                             })
+                     .responseText;
 
    level_data = JSON.parse(level_data);
    Game.map_grid.width = level_data.cols;
