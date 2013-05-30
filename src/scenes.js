@@ -4,6 +4,8 @@ Crafty.scene(
 
     // "constructor"
     function() {
+        var menu_data = level_data['Menu'];
+        grid_load_level(menu_data.level_data);
 
         Crafty.e('Title')
             .at(Game.map_grid.width/2 - 1, Game.map_grid.height/2 - 3);
@@ -13,14 +15,12 @@ Crafty.scene(
             .bind('KeyUp', function(e) {
                 if (e.key == Crafty.keys['ENTER']) {
 					Crafty.audio.stop();
-                    Crafty.scene('Level1');
+                    switch_level('Level1');
                 }
             });
 	
 		Crafty.e('HelpText')
 			  .at(Game.map_grid.width/2 - 4, Game.map_grid.height/2 - 1);
-
-        grid_load_level(menu_data.level_data);
 
         dudes = [];
         
@@ -61,6 +61,8 @@ Crafty.scene(
     Game.gameOver = false;
 
     dudes = [];
+    var level1_data = level_data['Level1'];
+    grid_load_level(level1_data.level_data);
 
     Crafty.e('Player1')
           .at(level1_data.p1.col, level1_data.p1.row);
@@ -68,7 +70,77 @@ Crafty.scene(
     Crafty.e('Player2')
           .at(level1_data.p2.col, level1_data.p2.row);
 
-    grid_load_level(level1_data.level_data);
+
+    // After 10 seconds, move the umbrella onto the field in a random location
+    Crafty.e('Umbrella')
+          .at(-1, -1)
+          .timeout(function() {
+                       var x = 1+Math.floor(Math.random()*(Game.map_grid.width-3));
+                       var y = Game.map_grid.height-3;
+
+                       // make the umbrella spawn far away from the players
+                       var dist = 0;
+                       for(var i=1; i<=Game.map_grid.width-2; ++i){
+                         var tryDist = min(abs(dudes[0].x-Game.map_grid.tile.width*i), abs(dudes[1].x-Game.map_grid.tile.width*i));
+                         if(tryDist > dist){
+                           dist = tryDist;
+                           x = i;
+                         }
+                       }
+
+                       this.at(x, y);
+                       this.recentre();
+                   }, 10000);
+		Crafty.audio.play("music", -1);
+
+    Crafty.e('Gun')
+          .at(-1, -1)
+          .timeout(function() {
+                       var x = 1+Math.floor(Math.random()*(Game.map_grid.width-3));
+                       var y = Game.map_grid.height-4;
+
+                       // make the gun spawn far away from the players
+                       var dist = 0;
+                       for(var i=1; i<=Game.map_grid.width-2; ++i){
+                         var tryDist = min(abs(dudes[0].x-Game.map_grid.tile.width*i), abs(dudes[1].x-Game.map_grid.tile.width*i));
+                         if(tryDist > dist){
+                           dist = tryDist;
+                           x = i;
+                         }
+                       }
+
+                       this.at(x, y);
+                       this.recentre();
+                   }, 15000);
+
+    },
+
+    // what happens when exiting this level, e.g. unbinding callbacks
+    function(){
+
+    }
+
+);
+
+Crafty.scene(
+
+  'Level2',
+
+  // what happens when entering this level, e.g. construct the level
+  function(){ 
+
+    Game.gameOver = false;
+
+    dudes = [];
+    var level2_data = level_data['Level2'];
+    grid_load_level(level2_data.level_data);
+
+    Crafty.e('Player1')
+          .at(level2_data.p1.col, level2_data.p1.row);
+
+    Crafty.e('Player2')
+          .at(level2_data.p2.col, level2_data.p2.row);
+
 
     // After 10 seconds, move the umbrella onto the field in a random location
     Crafty.e('Umbrella')
