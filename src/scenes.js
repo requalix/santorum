@@ -33,19 +33,19 @@ Crafty.scene(
         var p1 = Crafty.e('Player1')
               .at(menu_data.p1.col, menu_data.p1.row);
 
-    var p2 = Crafty.e('Player2')
-          .at(menu_data.p2.col, menu_data.p2.row);
+        var p2 = Crafty.e('Player2')
+              .at(menu_data.p2.col, menu_data.p2.row);
 
-    // attach help above players heads
-    Crafty.e('P1Help')
-        .at(Game.map_grid.width/2 - 7, Game.map_grid.height/2)
-        .setOwner(p1);
+        // attach help above players heads
+        Crafty.e('P1Help')
+            .at(Game.map_grid.width/2 - 7, Game.map_grid.height/2)
+            .setOwner(p1);
 
-    Crafty.e('P2Help')
-        .at(Game.map_grid.width/2 + 5, Game.map_grid.height/2)
-        .setOwner(p2);
+        Crafty.e('P2Help')
+            .at(Game.map_grid.width/2 + 5, Game.map_grid.height/2)
+            .setOwner(p2);
 			
-		Crafty.audio.play("menu");
+            Crafty.audio.play("menu");
     },
 
     // "destructor"
@@ -75,7 +75,6 @@ Crafty.scene(
 
     Crafty.e('Player2')
           .at(level1_data.p2.col, level1_data.p2.row);
-
 
     // After 10 seconds, move the umbrella onto the field in a random location
     Crafty.e('Umbrella')
@@ -169,7 +168,6 @@ Crafty.scene(
     Crafty.e('Player2')
           .at(level2_data.p2.col, level2_data.p2.row);
 
-
     // After 10 seconds, move the umbrella onto the field in a random location
     Crafty.e('Umbrella')
           .at(-1, -1)
@@ -214,8 +212,26 @@ Crafty.scene(
                        this.recentre();
                    }, 15000);
 
+    Crafty.e('Boots')
+          .at(-1, -1)
+          .timeout(function() {
+                       var x = 1+Math.floor(Math.random()*(Game.map_grid.width-3));
+                       var y = Game.map_grid.height-5;
 
+                       // make the boots spawn far away from the players
+                       var dist = 0;
+                       for(var i=1; i<=Game.map_grid.width-2; ++i){
+                         var tryDist = min(abs(dudes[0].x-Game.map_grid.tile.width*i),
+                                           abs(dudes[1].x-Game.map_grid.tile.width*i));
+                         if(tryDist > dist){
+                           dist = tryDist;
+                           x = i;
+                         }
+                       }
 
+                       this.at(x, y);
+                       this.recentre();
+                   }, 7500);
     },
 
     // what happens when exiting this level, e.g. unbinding callbacks
