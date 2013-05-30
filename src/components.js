@@ -235,7 +235,7 @@ Crafty.c('Dude', {
           var v = 8*(MAX_HEALTH-this.health)/MAX_HEALTH; // nice effect, wetter you are the harder the drops poor off you
           Crafty.e('WaterDroplet')
             .initP(x,y)
-            .initV(0,v);
+            .initV(this._movement.x/2,this._movement.y+v);
         }
       });
   },
