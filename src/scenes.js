@@ -13,9 +13,12 @@ Crafty.scene(
         Crafty.e('StartText')
             .at(Game.map_grid.width/2 - 1, Game.map_grid.height/2)
             .bind('KeyUp', function(e) {
-                if (e.key == Crafty.keys['ENTER']) {
-					Crafty.audio.stop();
+                if (e.key == Crafty.keys['1']) {
+                    Crafty.audio.stop();
                     switch_level('Level1');
+                } else if (e.key == Crafty.keys['2']) {
+                    Crafty.audio.stop();
+                    switch_level('Level2');
                 }
             });
 	
@@ -51,8 +54,8 @@ Crafty.scene(
     }
 );
 
-function abs(x){ if(x>=0) return x; return -x; }
-function min(x,y){ if(x<y) return x; return y; }
+abs = Math.abs;
+min = Math.min;
 
 Crafty.scene(
 
@@ -84,7 +87,8 @@ Crafty.scene(
                        // make the umbrella spawn far away from the players
                        var dist = 0;
                        for(var i=1; i<=Game.map_grid.width-2; ++i){
-                         var tryDist = min(abs(dudes[0].x-Game.map_grid.tile.width*i), abs(dudes[1].x-Game.map_grid.tile.width*i));
+                         var tryDist = min(abs(dudes[0].x-Game.map_grid.tile.width*i),
+                                           abs(dudes[1].x-Game.map_grid.tile.width*i));
                          if(tryDist > dist){
                            dist = tryDist;
                            x = i;
@@ -105,7 +109,8 @@ Crafty.scene(
                        // make the gun spawn far away from the players
                        var dist = 0;
                        for(var i=1; i<=Game.map_grid.width-2; ++i){
-                         var tryDist = min(abs(dudes[0].x-Game.map_grid.tile.width*i), abs(dudes[1].x-Game.map_grid.tile.width*i));
+                         var tryDist = min(abs(dudes[0].x-Game.map_grid.tile.width*i),
+                                           abs(dudes[1].x-Game.map_grid.tile.width*i));
                          if(tryDist > dist){
                            dist = tryDist;
                            x = i;
@@ -125,7 +130,8 @@ Crafty.scene(
                        // make the boots spawn far away from the players
                        var dist = 0;
                        for(var i=1; i<=Game.map_grid.width-2; ++i){
-                         var tryDist = min(abs(dudes[0].x-Game.map_grid.tile.width*i), abs(dudes[1].x-Game.map_grid.tile.width*i));
+                         var tryDist = min(abs(dudes[0].x-Game.map_grid.tile.width*i),
+                                           abs(dudes[1].x-Game.map_grid.tile.width*i));
                          if(tryDist > dist){
                            dist = tryDist;
                            x = i;
@@ -174,7 +180,8 @@ Crafty.scene(
                        // make the umbrella spawn far away from the players
                        var dist = 0;
                        for(var i=1; i<=Game.map_grid.width-2; ++i){
-                         var tryDist = min(abs(dudes[0].x-Game.map_grid.tile.width*i), abs(dudes[1].x-Game.map_grid.tile.width*i));
+                         var tryDist = min(abs(dudes[0].x-Game.map_grid.tile.width*i),
+                                           abs(dudes[1].x-Game.map_grid.tile.width*i));
                          if(tryDist > dist){
                            dist = tryDist;
                            x = i;
@@ -195,7 +202,8 @@ Crafty.scene(
                        // make the gun spawn far away from the players
                        var dist = 0;
                        for(var i=1; i<=Game.map_grid.width-2; ++i){
-                         var tryDist = min(abs(dudes[0].x-Game.map_grid.tile.width*i), abs(dudes[1].x-Game.map_grid.tile.width*i));
+                         var tryDist = min(abs(dudes[0].x-Game.map_grid.tile.width*i),
+                                           abs(dudes[1].x-Game.map_grid.tile.width*i));
                          if(tryDist > dist){
                            dist = tryDist;
                            x = i;
@@ -218,6 +226,11 @@ Crafty.scene(
 );
 
 // helper functions
+
+/**
+ * This function reads in a grid from the editor
+ * and creates the appropriate craft blocks
+ */
 function grid_load_level(grid) {
     for(var row = 0; row < Game.map_grid.height; row++) {
         for(var col = 0; col < Game.map_grid.width; col++) {

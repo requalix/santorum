@@ -286,7 +286,7 @@ Crafty.c('Dude', {
         this.color('#0000ff');
         this.timeout(function(){
 		  Crafty.audio.stop();
-          Crafty.scene('Level1');
+          switch_level('Menu');
         }, 2000);
       }
     }
@@ -664,7 +664,7 @@ Crafty.c('StartText', {
 
     init: function() {
         this.requires('Text, Grid, 2D, Canvas')
-            .text('Press enter to begin')
+            .text('Press number to select level')
             .textFont({'size': '20px', family: 'Courier'});
     }
 

@@ -37,6 +37,13 @@ Game = {
 }
 
 //helper functions
+
+/**
+ * GETs the level 'name' initialises crafty to the correct size
+ * then loads that scene.
+ * BUG: Changing level size to something bigger later does not
+ * work, so preferably make all levels the same size
+ */
 function switch_level(name) {
     level_data[name] = get_level(name);
     Crafty.init(Game.width(), Game.height());
@@ -44,6 +51,10 @@ function switch_level(name) {
     Crafty.scene(name);
 }
 
+/**
+ * Does the GET request via AJAX then sets the Game
+ * map_grid dimensions
+ */
 function get_level(url) {
     // get level data
    var level_data = $.ajax( {  url: url,

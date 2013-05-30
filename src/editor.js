@@ -220,14 +220,17 @@ function load_level_from_str(input_json) {
 }
 
 function load_level_backend(jsonlevel) {
-    NUM_ROWS = jsonlevel.rows;
-    NUM_COLS = jsonlevel.cols;
+    NUM_ROWS = parseInt(jsonlevel.rows);
+    NUM_COLS = parseInt(jsonlevel.cols);
     p1_spawn = jsonlevel.p1;
     p2_spawn = jsonlevel.p2;
     grid = jsonlevel.level_data;
     
     $('#io')[0].rows = NUM_ROWS;
     $('#io')[0].cols = NUM_COLS;
+
+    $('#map_width').val(NUM_COLS);
+    $('#map_height').val(NUM_ROWS);
 
     vertical_cell_size = (canvas.height - GRID_LINE_WIDTH * NUM_ROWS - 1) / NUM_ROWS;
     horizontal_cell_size = (canvas.width - GRID_LINE_WIDTH * NUM_COLS - 1) / NUM_COLS;
