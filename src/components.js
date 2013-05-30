@@ -198,9 +198,8 @@ Crafty.c('Twoway2000', {
   },
 });
 
-var MAX_HEALTH = 5000;
+var MAX_HEALTH = 4000;
 var DRIP_RATE = 2*MAX_HEALTH;
-var NO_BOOTS_DAMAGE = 10; // damage caused by making splashes without boots
 var SPLASH_DAMAGE = 100; // damage caused by being hit by a splash
 var dudes = [];
 Crafty.c('Dude', {
@@ -258,17 +257,18 @@ Crafty.c('Dude', {
 
   makeSplashs: function(shallowestPool, yVel) {
     for(var i=0; i<shallowestPool; ++i){
-      // making splashs costs you life if you don't have boots
-      if(!this._hasBoots)
-        this.dealDamage(NO_BOOTS_DAMAGE);
+      // boots make for bigger splashes
+      var dBoots = 0;
+      if(this._hasBoots)
+        dBoots = 5;
       // only if the player pressed the make splash button to accelerate downwards rapidly
       Crafty.e('Splash')
         .initP(this.x-Game.map_grid.width/4-Game.map_grid.width, this.y+this.h-((shallowestPool+0.25)*Game.map_grid.tile.height/4))
-        .initV((-7-i)*(yVel+60)/120, (-5.5-i)*(yVel+60)/120)
+        .initV((-7-i-dBoots)*(yVel+60)/120, (-5.5-i)*(yVel+60)/120)
         .setCreator(this.id);
       Crafty.e('Splash')
         .initP(this.x+this.w+Game.map_grid.width/4, this.y+this.h-((shallowestPool+0.25)*Game.map_grid.tile.height/4))
-        .initV((7+i)*(yVel+60)/120, (-5.5-i)*(yVel+60)/120)
+        .initV((7+i+dBoots)*(yVel+60)/120, (-5.5-i)*(yVel+60)/120)
         .setCreator(this.id);
     }
   },
@@ -763,7 +763,7 @@ Crafty.c('firstPickupBootsText', {
 
     init: function() {
         this.requires('FloatyHelp')
-            .text('Boots will prevent you taking daming when creating splash\'s.')
+            .text('Boots make for bigger better splash\'s.')
             .textFont({'size': '20px', family: 'Courier'})
             .timeout(function() {
               this.destroy();
