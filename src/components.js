@@ -362,6 +362,12 @@ Crafty.c('UmbrellaInUse', {
 
   setCreator: function(creator){
     this._creator = creator;
+    if(firstPickupUmbrella){
+      firstPickupUmbrella = false;
+      Crafty.e('firstPickupUmbrellaText')
+          .at(this._creator.x, this._creator.y - 2)
+          .setOwner(this._creator);
+    } 
   }
 
 });
@@ -407,6 +413,12 @@ Crafty.c('BootsInUse', {
   setCreator: function(creator){
     creator._hasBoots = true;
     this._creator = creator;
+    if(firstPickupBoots){
+      firstPickupBoots = false;
+      Crafty.e('firstPickupBootsText')
+          .at(this._creator.x, this._creator.y - 2)
+          .setOwner(this._creator);
+    } 
   }
 
 });
@@ -491,6 +503,12 @@ Crafty.c('GunInUse', {
 
   setCreator: function(creator){
     this._creator = creator;
+    if(firstPickupGun){
+      firstPickupGun = false;
+      Crafty.e('firstPickupGunText')
+          .at(this._creator.x, this._creator.y - 2)
+          .setOwner(this._creator);
+    } 
   }
 
 });
@@ -673,12 +691,15 @@ Crafty.c('HelpText2', {
 
 Crafty.c('FloatyHelp', {
 
+    _dxText: 0,
+    _dyText: 0,
+
     init: function() {
         this.requires('Text, Grid, 2D, Canvas')
             .bind('EnterFrame', function() {
                   if (this._owner !== null) {
                       var pos = this._owner.at();
-                      this.at(pos.x, pos.y - 2);
+                      this.at(pos.x+this._dxText, pos.y-2+this._dyText);
                   }
             });
     },
@@ -705,6 +726,50 @@ Crafty.c('P2Help', {
         this.requires('FloatyHelp')
             .text('Arrow keys')
             .textFont({'size': '20px', family: 'Courier'});
+    }
+
+});
+
+Crafty.c('firstPickupGunText', {
+
+    init: function() {
+        this.requires('FloatyHelp')
+            .text('Use left and right to choose direction for gun to fire.')
+            .textFont({'size': '20px', family: 'Courier'})
+            .timeout(function() {
+              this.destroy();
+            }, 3000);
+        this._dxText = -5;
+    }
+
+});
+
+Crafty.c('firstPickupUmbrellaText', {
+
+    init: function() {
+        this.requires('FloatyHelp')
+            .text('The umbrella will prevent rain from damaging you.')
+            .textFont({'size': '20px', family: 'Courier'})
+            .timeout(function() {
+              this.destroy();
+            }, 3000);
+        this._dxText = -5;
+        this._dyText = -1;
+    }
+
+});
+
+Crafty.c('firstPickupBootsText', {
+
+    init: function() {
+        this.requires('FloatyHelp')
+            .text('Boots will prevent you taking daming when creating splash\'s.')
+            .textFont({'size': '20px', family: 'Courier'})
+            .timeout(function() {
+              this.destroy();
+            }, 3000);
+        this._dxText = -5;
+        this._dyText = -2;
     }
 
 });
