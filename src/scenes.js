@@ -17,27 +17,30 @@ Crafty.scene(
                 }
             });
 	
-		Crafty.e('HelpText')
+		Crafty.e('HelpText1')
+			  .at(Game.map_grid.width/2 - 4, Game.map_grid.height/2 - 2);
+
+		Crafty.e('HelpText2')
 			  .at(Game.map_grid.width/2 - 4, Game.map_grid.height/2 - 1);
 
-        grid_load_level(menu_data.level_data);
+    grid_load_level(menu_data.level_data);
 
-        dudes = [];
-        
-        var p1 = Crafty.e('Player1')
-              .at(menu_data.p1.col, menu_data.p1.row);
+    dudes = [];
+    
+    var p1 = Crafty.e('Player1')
+          .at(menu_data.p1.col, menu_data.p1.row);
 
-        var p2 = Crafty.e('Player2')
-              .at(menu_data.p2.col, menu_data.p2.row);
+    var p2 = Crafty.e('Player2')
+          .at(menu_data.p2.col, menu_data.p2.row);
 
-        // attach help above players heads
-        Crafty.e('P1Help')
-            .at(Game.map_grid.width/2 - 7, Game.map_grid.height/2)
-            .setOwner(p1);
+    // attach help above players heads
+    Crafty.e('P1Help')
+        .at(Game.map_grid.width/2 - 7, Game.map_grid.height/2)
+        .setOwner(p1);
 
-        Crafty.e('P2Help')
-            .at(Game.map_grid.width/2 + 5, Game.map_grid.height/2)
-            .setOwner(p2);
+    Crafty.e('P2Help')
+        .at(Game.map_grid.width/2 + 5, Game.map_grid.height/2)
+        .setOwner(p2);
 			
 		Crafty.audio.play("menu");
     },

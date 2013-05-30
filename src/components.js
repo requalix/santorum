@@ -602,11 +602,20 @@ Crafty.c('StartText', {
 
 });
 
-Crafty.c('HelpText', {
+Crafty.c('HelpText1', {
 
     init: function() {
         this.requires('Text, Grid, 2D, Canvas')
             .text('Splash your opponent the most to win!')
+            .textFont({'size': '20px', family: 'Courier'});
+    }
+
+});
+Crafty.c('HelpText2', {
+
+    init: function() {
+        this.requires('Text, Grid, 2D, Canvas')
+            .text('Use down whilst in the air to super splash.')
             .textFont({'size': '20px', family: 'Courier'});
     }
 
