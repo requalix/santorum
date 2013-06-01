@@ -168,70 +168,96 @@ Crafty.scene(
     Crafty.e('Player2')
           .at(level2_data.p2.col, level2_data.p2.row);
 
-    // After 10 seconds, move the umbrella onto the field in a random location
+    // A cell is ok to spawn a pickup iff 
+    // it is sky with a wall at most 3 cells below, and nothing but sky inbetween
+    var levelMap = level2_data.level_data;
+    var ok = [];
+    for(var x=0; x<Game.map_grid.width; ++x){
+      ok[x] = [];
+      for(var y=0; y<Game.map_grid.height; ++y)
+        ok[x][y] = false;
+    }
+    for(var x=0; x<Game.map_grid.width; ++x)
+      for(var y=Game.map_grid.height-1; y>=0; --y){
+        ok[x][y] = false;
+        if(levelMap[y][x] != 'sky')
+          continue;
+        for(var k=1; k<=3 && y+k<Game.map_grid.height; ++k)
+          if(!ok[x][k+y]){
+            if(levelMap[k+y][x] == 'wall')
+              ok[x][y] = true;
+            break;
+          }
+      }
+
+    // After 10 seconds, move the umbrella onto the field in a location farthest from the 2 players
     Crafty.e('Umbrella')
           .at(-1, -1)
           .timeout(function() {
-                       var x = 1+Math.floor(Math.random()*(Game.map_grid.width-3));
-                       var y = Game.map_grid.height-3;
+              var x=-1;
+              var y=-1;
+              var dist=0;
+              for(var xx=0; xx<Game.map_grid.width; ++xx)
+                for(var yy=0; yy<Game.map_grid.height; ++yy)
+                  if(ok[xx][yy]){
+                    var tryDist = min(abs(dudes[0].x-Game.map_grid.tile.width*xx) + abs(dudes[0].y-Game.map_grid.tile.height*yy),
+                                       abs(dudes[1].x-Game.map_grid.tile.width*xx) + abs(dudes[1].y-Game.map_grid.tile.height*yy));
+                    if(tryDist > dist){
+                      dist = tryDist;
+                      x = xx;
+                      y = yy;
+                    }
+                  }
+              ok[x][y] = false; // the other pickups cannot now be placed here
+              this.at(x,y);
+              this.recentre();
+          }, 10000);
 
-                       // make the umbrella spawn far away from the players
-                       var dist = 0;
-                       for(var i=1; i<=Game.map_grid.width-2; ++i){
-                         var tryDist = min(abs(dudes[0].x-Game.map_grid.tile.width*i),
-                                           abs(dudes[1].x-Game.map_grid.tile.width*i));
-                         if(tryDist > dist){
-                           dist = tryDist;
-                           x = i;
-                         }
-                       }
-
-                       this.at(x, y);
-                       this.recentre();
-                   }, 10000);
 		Crafty.audio.play("music", -1);
 
     Crafty.e('Gun')
           .at(-1, -1)
           .timeout(function() {
-                       var x = 1+Math.floor(Math.random()*(Game.map_grid.width-3));
-                       var y = Game.map_grid.height-4;
-
-                       // make the gun spawn far away from the players
-                       var dist = 0;
-                       for(var i=1; i<=Game.map_grid.width-2; ++i){
-                         var tryDist = min(abs(dudes[0].x-Game.map_grid.tile.width*i),
-                                           abs(dudes[1].x-Game.map_grid.tile.width*i));
-                         if(tryDist > dist){
-                           dist = tryDist;
-                           x = i;
-                         }
-                       }
-
-                       this.at(x, y);
-                       this.recentre();
-                   }, 15000);
+              var x=-1;
+              var y=-1;
+              var dist=0;
+              for(var xx=0; xx<Game.map_grid.width; ++xx)
+                for(var yy=0; yy<Game.map_grid.height; ++yy)
+                  if(ok[xx][yy]){
+                    var tryDist = min(abs(dudes[0].x-Game.map_grid.tile.width*xx) + abs(dudes[0].y-Game.map_grid.tile.height*yy),
+                                       abs(dudes[1].x-Game.map_grid.tile.width*xx) + abs(dudes[1].y-Game.map_grid.tile.height*yy));
+                    if(tryDist > dist){
+                      dist = tryDist;
+                      x = xx;
+                      y = yy;
+                    }
+                  }
+              ok[x][y] = false; // the other pickups cannot now be placed here
+              this.at(x,y);
+              this.recentre();
+           }, 15000);
 
     Crafty.e('Boots')
           .at(-1, -1)
           .timeout(function() {
-                       var x = 1+Math.floor(Math.random()*(Game.map_grid.width-3));
-                       var y = Game.map_grid.height-5;
-
-                       // make the boots spawn far away from the players
-                       var dist = 0;
-                       for(var i=1; i<=Game.map_grid.width-2; ++i){
-                         var tryDist = min(abs(dudes[0].x-Game.map_grid.tile.width*i),
-                                           abs(dudes[1].x-Game.map_grid.tile.width*i));
-                         if(tryDist > dist){
-                           dist = tryDist;
-                           x = i;
-                         }
-                       }
-
-                       this.at(x, y);
-                       this.recentre();
-                   }, 7500);
+              var x=-1;
+              var y=-1;
+              var dist=0;
+              for(var xx=0; xx<Game.map_grid.width; ++xx)
+                for(var yy=0; yy<Game.map_grid.height; ++yy)
+                  if(ok[xx][yy]){
+                    var tryDist = min(abs(dudes[0].x-Game.map_grid.tile.width*xx) + abs(dudes[0].y-Game.map_grid.tile.height*yy),
+                                       abs(dudes[1].x-Game.map_grid.tile.width*xx) + abs(dudes[1].y-Game.map_grid.tile.height*yy));
+                    if(tryDist > dist){
+                      dist = tryDist;
+                      x = xx;
+                      y = yy;
+                    }
+                  }
+              ok[x][y] = false; // the other pickups cannot now be placed here
+              this.at(x,y);
+              this.recentre();
+            }, 7500);
     },
 
     // what happens when exiting this level, e.g. unbinding callbacks
