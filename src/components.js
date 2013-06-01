@@ -262,13 +262,15 @@ Crafty.c('Dude', {
       if(this._hasBoots)
         dBoots = 5;
       // only if the player pressed the make splash button to accelerate downwards rapidly
+      var dx = (7+i+dBoots)*(yVel+60)/120;
+      var dy = (-5.5-i)*(yVel+60)/120;
       Crafty.e('Splash')
-        .initP(this.x-Game.map_grid.width/4-Game.map_grid.width, this.y+this.h-((shallowestPool+0.25)*Game.map_grid.tile.height/4))
-        .initV((-7-i-dBoots)*(yVel+60)/120, (-5.5-i)*(yVel+60)/120)
+        .initP(this.x-Game.map_grid.width/4-Game.map_grid.width, this.y+this.h-((shallowestPool+1.1)*Game.map_grid.tile.height/4))
+        .initV(-dx, dy)
         .setCreator(this.id);
       Crafty.e('Splash')
-        .initP(this.x+this.w+Game.map_grid.width/4, this.y+this.h-((shallowestPool+0.25)*Game.map_grid.tile.height/4))
-        .initV((7+i+dBoots)*(yVel+60)/120, (-5.5-i)*(yVel+60)/120)
+        .initP(this.x+this.w+Game.map_grid.width/4, this.y+this.h-((shallowestPool+1.1)*Game.map_grid.tile.height/4))
+        .initV(dx, dy)
         .setCreator(this.id);
     }
   },
