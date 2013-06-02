@@ -313,7 +313,7 @@ Crafty.c('Player1', {
                           Crafty.keys['D'],
                           Crafty.keys['W'],
                           Crafty.keys['S'])
-              .color('#583726')
+          //    .color('#583726')
               .setId('Player1');
 
           this.__name = 'Player1';
@@ -328,7 +328,7 @@ Crafty.c('Player2', {
                           Crafty.keys['RIGHT_ARROW'],
                           Crafty.keys['UP_ARROW'],
                           Crafty.keys['DOWN_ARROW'])
-              .color('#f6bda9')
+         //     .color('#f6bda9')
               .setId('Player2');
 
           this.__name = 'Player2';
