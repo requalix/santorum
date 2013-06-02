@@ -614,11 +614,13 @@ Crafty.c('Splash', {
       .onHit('Dude', function(objs) {
         for(var i=0; i<objs.length; ++i)
           if(objs[i].obj.id != this.creator){
+            Crafty.audio.play('damage');
             objs[i].obj.dealDamage(SPLASH_DAMAGE);
             this.destroy();
           }
       })
       .move().attr({ _movement: {x: 0, y: 0}, gravity: 0.25 });
+      Crafty.audio.play('splash');
   },
 
   setCreator: function(_creator){

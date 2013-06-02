@@ -29,6 +29,8 @@ Game = {
 
     // import audio
     Crafty.audio.add("jump", "sounds/jump.wav");
+    Crafty.audio.add("splash", "sounds/splash1.wav");
+    Crafty.audio.add("damage", "sounds/take_damage1.wav");
     Crafty.audio.add("music", "sounds/music.mp3");
     Crafty.audio.add("menu", "sounds/menu.mp3");
 
