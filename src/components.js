@@ -106,7 +106,7 @@ Crafty.c('Movable', {
   },
 
   // attributes
-  gravity: 0.2,
+  gravity: 0.3,
 
   move: function() {
     return this.bind('EnterFrame', function() {
@@ -602,7 +602,7 @@ Crafty.c('HealthBar', {
 Crafty.c('Splash', {
 
   // attributes:
-  gravity: 0.2,
+  gravity: 0.25,
   creator: null,
 
   init: function() {
@@ -618,7 +618,7 @@ Crafty.c('Splash', {
             this.destroy();
           }
       })
-      .move().attr({ _movement: {x: 0, y: 0}, gravity: 0.2 });
+      .move().attr({ _movement: {x: 0, y: 0}, gravity: 0.25 });
   },
 
   setCreator: function(_creator){
@@ -644,7 +644,7 @@ Crafty.c('Splash', {
 Crafty.c('WaterDroplet', {
 
   // attributes
-  gravity: 0.2,
+  gravity: 0.25,
 
   init: function() {
     this.requires('Actor')
@@ -652,7 +652,7 @@ Crafty.c('WaterDroplet', {
     this.requires('Color, Collision, Movable')
       .color('rgba(0,0,255,.5)')
       .onHit('Block', function(){ return this.destroy(); })
-      .move().attr({ _movement: {x: 0, y: 0}, gravity: 0.2 });
+      .move().attr({ _movement: {x: 0, y: 0}, gravity: 0.25 });
   },
 
   initP: function(_x, _y){
