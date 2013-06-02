@@ -106,7 +106,7 @@ Crafty.c('Movable', {
   },
 
   // attributes
-  gravity: 0.3,
+  gravity: 0.4,
 
   move: function() {
     return this.bind('EnterFrame', function() {
@@ -169,7 +169,7 @@ Crafty.c('Twoway2000', {
 
   // attributes:
   speed: 8, // when push left and right how many pixels per frame to move
-  jump_speed: 10, // how many pixels per frame up should we go
+  jump_speed: 14, // how many pixels per frame up should we go
 
   init: function() {
     this.requires('Movable').
