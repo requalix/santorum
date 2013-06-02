@@ -510,8 +510,8 @@ Crafty.c('Gun', {
   }
 });
 
-var SHOOT_FREQUENCY = 15;
-var SHOOT_COUNT = 15;
+var SHOOT_FREQUENCY = 10;
+var SHOOT_COUNT = 35;
 Crafty.c('GunInUse', {
 
   /* Variables
