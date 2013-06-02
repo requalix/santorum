@@ -224,7 +224,7 @@ Crafty.c('Dude', {
       .requires('Actor')
       .attr({w: Game.map_grid.tile.width, h: Game.map_grid.tile.height * 2, z: -2})
       .requires('Twoway2000, Color, Collision')
-      .color('#817679')
+      .color('rgba(0,0,0,0)')
       .bind('stopCallback', function(yVel){
         if(this.hit('Water').length > 0){
           this.detectEnterWater(yVel);
