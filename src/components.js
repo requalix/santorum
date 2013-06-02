@@ -1,3 +1,6 @@
+Crafty.sprite(64,"assets/character_1.png",{p1sprite:[0,0]})
+Crafty.sprite(64,"assets/character_2.png",{p2sprite:[0,0]})
+
 // The Grid component allows an element to be located
 //  on a grid of tiles
 Crafty.c('Grid', {
@@ -286,6 +289,12 @@ Crafty.c('Dude', {
       if(this.health <= 0){
         Game.gameOver = true;
         this.color('#0000ff');
+        if (this.__name=="Player1") {
+            Crafty.e('asdfLoseGameText')._owner=this;
+        }
+        if (this.__name=="Player2") {
+            Crafty.e('arrowLoseGameText')._owner=this;
+        }
         this.timeout(function(){
 		  Crafty.audio.stop();
           switch_level('Menu');
@@ -298,7 +307,8 @@ Crafty.c('Dude', {
 
 Crafty.c('Player1', {
     init: function() {
-          this.requires('Dude')
+          this.requires('Dude, p1sprite')
+              .sprite(0,0,1,2).attr({h:Game.map_grid.tile.height * 2, z: -2})
               .twoway2000(Crafty.keys['A'],
                           Crafty.keys['D'],
                           Crafty.keys['W'],
@@ -312,7 +322,8 @@ Crafty.c('Player1', {
 
 Crafty.c('Player2', {
     init: function() {
-          this.requires('Dude')
+          this.requires('Dude, p2sprite')
+              .sprite(0,0,1,2).attr({h:Game.map_grid.tile.height * 2, z: -2})
               .twoway2000(Crafty.keys['LEFT_ARROW'],
                           Crafty.keys['RIGHT_ARROW'],
                           Crafty.keys['UP_ARROW'],
@@ -592,7 +603,7 @@ Crafty.c('WaterDroplet', {
     this.requires('Actor')
       .attr({w: Game.map_grid.tile.width/8, h: Game.map_grid.tile.height/8});
     this.requires('Color, Collision, Movable')
-      .color('#0000ff')
+      .color('rgba(0,0,255,.5)')
       .onHit('Block', function(){ return this.destroy(); })
       .move().attr({ _movement: {x: 0, y: 0}, gravity: 0.2 });
   },
@@ -623,7 +634,7 @@ Crafty.c('RainDroplet', {
     this.requires('Actor')
       .attr({w: Game.map_grid.tile.width/8, h: Game.map_grid.tile.height/8});
     this.requires('Color, Collision, Movable')
-      .color('#0000ff')
+      .color('rgba(0,0,255,.5)')
       .onHit('Block', function(){ return this.destroy(); })
       .onHit('UmbrellaInUse', function(){ return this.destroy(); })
       .onHit('Water', function(){ return this.destroy(); })
@@ -666,7 +677,7 @@ Crafty.c('StartText', {
 
     init: function() {
         this.requires('Text, Grid, 2D, Canvas')
-            .text('Press number to select level')
+            .text('Press 1 or 2 to select level')
             .textFont({'size': '20px', family: 'Courier'});
     }
 
@@ -775,3 +786,31 @@ Crafty.c('firstPickupBootsText', {
     }
 
 });
+
+Crafty.c('asdfLoseGameText', {
+
+    init: function() {
+        this.requires('FloatyHelp')
+            .text('WASD you lose ahhahahahahahaha go home and dry off')
+            .textFont({'size': '20px', family: 'Courier'})
+            .timeout(function() {
+              this.destroy();
+            }, 3000);
+        this._dxText = -5;
+    }
+});
+
+Crafty.c('arrowLoseGameText', {
+
+    init: function() {
+        this.requires('FloatyHelp')
+            .text('Arrow keys you lose ahhahahahahahaha go home and dry off')
+            .textFont({'size': '20px', family: 'Courier'})
+            .timeout(function() {
+              this.destroy();
+            }, 3000);
+        this._dxText = -5;
+    }
+
+});
+
