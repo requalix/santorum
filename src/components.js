@@ -1,7 +1,12 @@
 Crafty.sprite(64,"assets/character1_spritemap.png",{p1right:[0,0,1,2],p1left:[1,0,1,2]});
 Crafty.sprite(64,"assets/character2_spritemap.png",{p2right:[0,0,1,2],p2left:[1,0,1,2]});
-Crafty.sprite(64,"assets/umbrella.png",{umbrella:[0,0,2,1]});
+Crafty.sprite(64,"assets/groundmap.png",{
+  grass: [1,0],
+  // TODO fill this out
+});
+Crafty.sprite(32,"assets/umbrella.png",{umbrella:[0,0,3,1]});
 Crafty.sprite(32,"assets/water_pistol_spritemap.png",{rightgun:[0,0,3,1],leftgun:[3,0,3,1]});
+Crafty.sprite(32,"assets/boots.png", {leftboots:[0,0,3,2],rightboots:[3,0,3,2]});
 
 // The Grid component allows an element to be located
 //  on a grid of tiles
@@ -53,8 +58,8 @@ Crafty.c('Water', {
 
 Crafty.c('Block', {
   init: function() {
-    this.requires('Actor, Color')
-      .color('#ADA96E');
+    this.requires('Actor, Color, grass')
+      .color('rgba(0,0,0,0)');
   },
 
   setP: function(_x,_y) {
@@ -354,10 +359,9 @@ Crafty.c('Player2', {
 Crafty.c('Umbrella', {
   init: function() {
     this
-      .requires('Actor')
-      .attr({w: Game.map_grid.tile.width/2, h: Game.map_grid.tile.height/2})
+      .requires('Actor, umbrella')
       .requires('Color, Collision')
-      .color('#FF0000')
+      .color('rgba(0,0,0,0)')
       .onHit('Dude', function(objs) {
         for(var i=0; i<objs.length; ++i){
           Crafty.e('UmbrellaInUse')
@@ -379,10 +383,10 @@ Crafty.c('UmbrellaInUse', {
 
   init: function() {
     this
-      .requires('Actor')
+      .requires('Actor, umbrella')
       .attr({w: Game.map_grid.tile.width * 3/2, h: Game.map_grid.tile.height/2})
       .requires('Twoway2000, Color, Collision')
-      .color('#FF0000')
+      .color('rgba(0,0,0,0)')
       .bind('EnterFrame', function(){
         this.x = this._creator.x - Game.map_grid.tile.width/4; // Center the umbrella over the owner
         this.y = this._creator.y - this.h;
@@ -404,14 +408,23 @@ Crafty.c('UmbrellaInUse', {
 Crafty.c('Boots', {
   init: function() {
     this
-      .requires('Actor')
-      .attr({w: Game.map_grid.tile.width/2, h: Game.map_grid.tile.height/2})
+      .requires('Actor, leftboots')
+      //.attr({w: Game.map_grid.tile.width/2, h: Game.map_grid.tile.height/2})
       .requires('Color, Collision')
-      .color('#B03060')
+      .color('rgba(0,0,0,0)')
       .onHit('Dude', function(objs) {
         for(var i=0; i<objs.length; ++i){
+          objs[i].obj.boots =
           Crafty.e('BootsInUse')
             .setCreator(objs[i].obj);
+          if (objs[i].obj._facing == 'L') {
+            objs[i].obj.boots.sprite(3,0,3,2);
+            objs[i].obj.boots._facing = 'L';
+          }
+          if (objs[i].obj._facing == 'R') {
+            objs[i].obj.boots.sprite(0,0,3,2);
+            objs[i].obj.boots._facing = 'R';
+          }
           this.destroy();
         }
       });
@@ -430,12 +443,19 @@ Crafty.c('BootsInUse', {
   init: function() {
     this
       .requires('Actor')
-      .attr({w: Game.map_grid.tile.width * 3/2, h: Game.map_grid.tile.height/2})
+      // .attr({w: Game.map_grid.tile.width * 3/2, h: Game.map_grid.tile.height/2})
+      .requires('leftboots')
       .requires('Twoway2000, Color, Collision')
-      .color('#B03060')
+      .color('rgba(0,0,0,0)')
       .bind('EnterFrame', function(){
+        if (this._creator._facing == 'L') {
+          this.sprite(3,0,3,2);
+        }
+        if (this._creator._facing == 'R') {
+          this.sprite(0,0,3,2);
+        }
         this.x = this._creator.x - Game.map_grid.tile.width/4; // Center the umbrella over the owner
-        this.y = this._creator.y + 3*this._creator.h/4;
+        this.y = this._creator.y + this._creator.h - this.h;
       });
   },
 
@@ -447,7 +467,8 @@ Crafty.c('BootsInUse', {
       Crafty.e('firstPickupBootsText')
           .at(this._creator.x, this._creator.y - 2)
           .setOwner(this._creator);
-    } 
+    }
+    return this;
   }
 
 });
