@@ -45,7 +45,7 @@ Crafty.scene(
             .at(Game.map_grid.width/2 + 5, Game.map_grid.height/2)
             .setOwner(p2);
 			
-            Crafty.audio.play("menu");
+            Crafty.audio.play("menu", 1, 0.8);
     },
 
     // "destructor"
@@ -97,7 +97,7 @@ Crafty.scene(
                        this.at(x, y);
                        this.recentre();
                    }, 10000);
-		Crafty.audio.play("music", -1);
+		Crafty.audio.play("music", -1, 0.5);
 
     Crafty.e('Gun')
           .at(-1, -1)
@@ -213,7 +213,7 @@ Crafty.scene(
               this.recentre();
           }, 10000);
 
-		Crafty.audio.play("music", -1);
+		Crafty.audio.play("music", -1, 0.5);
 
     Crafty.e('Gun')
           .at(-1, -1)
