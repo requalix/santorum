@@ -62,7 +62,6 @@ Crafty.c('Block', {
   init: function() {
     this.requires('Actor, Color, mgrass')
       .color('rgba(0,0,0,0)');
-    console.log("hello", this.sprite);
   },
 
   setP: function(_x,_y) {
