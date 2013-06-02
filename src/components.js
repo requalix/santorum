@@ -1,5 +1,5 @@
-Crafty.sprite(64,"assets/character_1.png",{p1sprite:[0,0]})
-Crafty.sprite(64,"assets/character_2.png",{p2sprite:[0,0]})
+Crafty.sprite(64,"assets/character1_spritemap.png",{p1right:[0,0,1,2],p1left:[1,0,1,2]});
+Crafty.sprite(64,"assets/character2_spritemap.png",{p2right:[0,0,1,2],p2left:[1,0,1,2]});
 
 // The Grid component allows an element to be located
 //  on a grid of tiles
@@ -231,6 +231,8 @@ Crafty.c('Dude', {
         }
       })
       .bind('EnterFrame', function(){ 
+          if (this._movement.x < 0) this.sprite(1,0,1,2);
+          if (this._movement.x > 0) this.sprite(0,0,1,2);
         //console.log('Dude._globalZ = ', this._globalZ);
         this.dripCounter += MAX_HEALTH - this.health;
         while(this.dripCounter >= DRIP_RATE){
@@ -307,8 +309,7 @@ Crafty.c('Dude', {
 
 Crafty.c('Player1', {
     init: function() {
-          this.requires('Dude, p1sprite')
-              .sprite(0,0,1,2).attr({h:Game.map_grid.tile.height * 2, z: -2})
+          this.requires('Dude, p1right')
               .twoway2000(Crafty.keys['A'],
                           Crafty.keys['D'],
                           Crafty.keys['W'],
@@ -322,8 +323,7 @@ Crafty.c('Player1', {
 
 Crafty.c('Player2', {
     init: function() {
-          this.requires('Dude, p2sprite')
-              .sprite(0,0,1,2).attr({h:Game.map_grid.tile.height * 2, z: -2})
+          this.requires('Dude, p2left')
               .twoway2000(Crafty.keys['LEFT_ARROW'],
                           Crafty.keys['RIGHT_ARROW'],
                           Crafty.keys['UP_ARROW'],
