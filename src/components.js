@@ -1,8 +1,10 @@
 Crafty.sprite(64,"assets/character1_spritemap.png",{p1right:[0,0,1,2],p1left:[1,0,1,2]});
 Crafty.sprite(64,"assets/character2_spritemap.png",{p2right:[0,0,1,2],p2left:[1,0,1,2]});
 Crafty.sprite(64,"assets/groundmap.png",{
-  grass: [1,0],
-  // TODO fill this out
+  lgrass: [0,0],
+  mgrass: [1,0],
+  rgrass: [2,0],
+  ground: [3,0]
 });
 Crafty.sprite(32,"assets/umbrella.png",{umbrella:[0,0,3,1]});
 Crafty.sprite(32,"assets/water_pistol_spritemap.png",{rightgun:[0,0,3,1],leftgun:[3,0,3,1]});
@@ -58,8 +60,9 @@ Crafty.c('Water', {
 
 Crafty.c('Block', {
   init: function() {
-    this.requires('Actor, Color, grass')
+    this.requires('Actor, Color, mgrass')
       .color('rgba(0,0,0,0)');
+    console.log("hello", this.sprite);
   },
 
   setP: function(_x,_y) {

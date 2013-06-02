@@ -279,7 +279,17 @@ function grid_load_level(grid) {
             var tile = grid[row][col];
             switch (tile) {
                 case 'wall':
-                    Crafty.e('Block').at(col, row);
+                    __x = 3;
+                    if(row!=0 && grid[row-1][col]=='sky'){
+                      __x = 1;
+                      if(col!=Game.map_grid.width-1 && grid[row][col+1]=='sky')
+                        __x = 2;
+                      if(col!=0 && grid[row][col-1]=='sky')
+                        __x = 0;
+                    }
+                    Crafty.e('Block')
+                      .at(col, row)
+                      .sprite(__x,0);
                     break;
                 case 'sky':
                     break;
