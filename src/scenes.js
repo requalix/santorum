@@ -118,7 +118,7 @@ Crafty.scene(
 
                        this.at(x, y);
                        this.recentre();
-                   }, 15000);
+                   }, 1000);
 
     Crafty.e('Boots')
           .at(-1, -1)

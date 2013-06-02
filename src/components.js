@@ -1,5 +1,7 @@
 Crafty.sprite(64,"assets/character1_spritemap.png",{p1right:[0,0,1,2],p1left:[1,0,1,2]});
 Crafty.sprite(64,"assets/character2_spritemap.png",{p2right:[0,0,1,2],p2left:[1,0,1,2]});
+Crafty.sprite(64,"assets/umbrella.png",{umbrella:[0,0,2,1]});
+Crafty.sprite(32,"assets/water_pistol_spritemap.png",{rightgun:[0,0,3,1],leftgun:[3,0,3,1]});
 
 // The Grid component allows an element to be located
 //  on a grid of tiles
@@ -231,8 +233,22 @@ Crafty.c('Dude', {
         }
       })
       .bind('EnterFrame', function(){ 
-          if (this._movement.x < 0) this.sprite(1,0,1,2);
-          if (this._movement.x > 0) this.sprite(0,0,1,2);
+          if (this._movement.x < 0) {
+            this._facing = 'L';
+            this.sprite(1,0,1,2);
+            if (this.gun != null) {
+              this.gun._facing = 'L';
+              this.gun.sprite(3, 0, 3, 1);
+            }
+          }
+          if (this._movement.x > 0) {
+            this._facing = 'R';
+            this.sprite(0,0,1,2);
+            if (this.gun != null) {
+              this.gun._facing = 'R';
+              this.gun.sprite(0, 0, 3, 1);
+            }
+          }
         //console.log('Dude._globalZ = ', this._globalZ);
         this.dripCounter += MAX_HEALTH - this.health;
         while(this.dripCounter >= DRIP_RATE){
@@ -439,14 +455,25 @@ Crafty.c('BootsInUse', {
 Crafty.c('Gun', {
   init: function() {
     this
-      .requires('Actor')
-      .attr({w: Game.map_grid.tile.width/2, h: Game.map_grid.tile.height/2})
-      .requires('Color, Collision')
-      .color('#FFFF00')
+      .requires('Actor, Color, rightgun')
+      .attr({w: 57, h: 27})
+      .requires('Collision')
+      .color('rgba(0,0,0,0)')
       .onHit('Dude', function(objs) {
         for(var i=0; i<objs.length; ++i){
-          Crafty.e('GunInUse')
-            .setCreator(objs[i].obj);
+          objs[i].obj.gun =
+            Crafty.e('GunInUse')
+              .setCreator(objs[i].obj);
+
+          if (objs[i].obj._facing == 'L') {
+            objs[i].obj.gun.sprite(3,0,3,1);
+            objs[i].obj.gun._facing = 'L';
+          }
+          if (objs[i].obj._facing == 'R') {
+            objs[i].obj.gun.sprite(0,0,3,1);
+            objs[i].obj.gun._facing = 'R';
+          }
+
           this.destroy();
         }
       });
@@ -473,18 +500,12 @@ Crafty.c('GunInUse', {
 
   init: function() {
     this
-      .requires('Actor')
-      .attr({w: Game.map_grid.tile.width * 3/2, h: Game.map_grid.tile.height/4, _facing: 'L', _shoot: 0, _shotsLeft: SHOOT_COUNT})
-      .requires('Twoway2000, Color, Collision')
-      .color('#FFFF00')
+      .requires('Actor, Color, rightgun')
+      // .attr({w: 27, h: 27})
+      .attr({_facing: 'L', _shoot: 0, _shotsLeft: SHOOT_COUNT})
+      .requires('Twoway2000, Collision')
+      .color('rgba(0,0,0,0)')
       .bind('EnterFrame', function(){
-
-        // decide which way we are facing
-        var newX = this._creator.x - Game.map_grid.tile.width/4;
-        if(newX > this.x)
-          this._facing = 'R';
-        if(newX < this.x)
-          this._facing = 'L';
 
         // move the image to the appropriate position
         this.x = this._creator.x - Game.map_grid.tile.width/4; // Center the umbrella over the owner
@@ -507,8 +528,10 @@ Crafty.c('GunInUse', {
 
           // handle shot counters
           this._shoot = 0;
-          if(--this._shotsLeft == 0)
+          if(--this._shotsLeft == 0) {
+            this._creator.gun=null;
             this.destroy();
+          }
 
         }
       });
@@ -522,6 +545,7 @@ Crafty.c('GunInUse', {
           .at(this._creator.x, this._creator.y - 2)
           .setOwner(this._creator);
     } 
+    return this;
   }
 
 });
